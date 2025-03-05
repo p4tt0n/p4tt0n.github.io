@@ -3,8 +3,9 @@
     src:url('https://cdn.jsdelivr.net/gh/xxx/xxx/font/xxx.ttf'); /* 修改成你的字体 */
     font-display:swap
 }
-h1#site-title {
-    font-family:arzhu!important
+#site-title {
+/*    font-family:arzhu!important*/
+    color:black;
 }
 span#subtitle {
     font-family:arzhu!important
