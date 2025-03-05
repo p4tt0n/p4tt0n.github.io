@@ -3,15 +3,27 @@
     src:url('https://cdn.jsdelivr.net/gh/xxx/xxx/font/xxx.ttf'); /* 修改成你的字体 */
     font-display:swap
 }
-#site-title {
-/*    font-family:arzhu!important*/
-    color:black;
+#page-header #site-title {
+    /* font-family: arzhu !important; */
+    background: linear-gradient(to right, #ff5faf, #feb47b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 48px;
+    font-weight: bold;
 }
 span#subtitle {
-    font-family:arzhu!important
+    
+    color: black;
+    
 }
-a#site-name {
-    font-family:arzhu!important
+#nav .site-name {
+    background: linear-gradient(to right, #6d5fff, #7bfeb5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 #recent-posts>.recent-post-item,.layout_page>div:first-child:not(.recent-posts),.layout_post>#page,.layout_post>#post,.read-mode .layout_post>#post {
